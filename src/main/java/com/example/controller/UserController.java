@@ -11,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @Controller
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -22,6 +24,11 @@ public class UserController {
     public ResponseEntity<String> createUser(@Valid @RequestBody CreateUserCommand createCommand) {
         userService.createUser(createCommand);
         return ResponseEntity.ok().body("User created");
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getUsers() {
+        return ResponseEntity.ok().body(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
