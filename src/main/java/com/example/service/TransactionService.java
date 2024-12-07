@@ -48,14 +48,13 @@ public class TransactionService {
     }
 
     private void updateTokenStatistics(User user, TokenStatistics tokenStatistics, CreateTransactionCommand command, Transaction transaction) {
-        BigDecimal currentTotalTokens = tokenStatistics.getTotalTokens() == null ? BigDecimal.ZERO : tokenStatistics.getTotalTokens();
+
         if (transaction.getTransactionType() == TransactionType.BUY) {
-            currentTotalTokens = currentTotalTokens.add(command.getQuantity());
+            tokenStatistics.addTokens(command.getQuantity());
         } else if (transaction.getTransactionType() == TransactionType.SELL) {
-            currentTotalTokens = currentTotalTokens.subtract(command.getQuantity());
+            tokenStatistics.withdrawTokens(command.getQuantity());
         }
 
-        tokenStatistics.setTotalTokens(currentTotalTokens);
         BigDecimal avgPurchasePrice = Transaction.calculateAveragePurchasePrice(user.getTransactions(), Cryptocurrency.getCryptocurrency(command.getCryptocurrency()));
         BigDecimal avgSellPrice = Transaction.calculateAverageSellPrice(user.getTransactions(), Cryptocurrency.getCryptocurrency(command.getCryptocurrency()));
 

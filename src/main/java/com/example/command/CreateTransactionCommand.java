@@ -33,4 +33,5 @@ public class CreateTransactionCommand {
         this.quantity = quantity;
         this.creationDate = LocalDate.now();
     }
+
 }

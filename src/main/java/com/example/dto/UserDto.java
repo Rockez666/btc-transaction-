@@ -7,20 +7,24 @@ import java.util.List;
 
 @Data
 public class UserDto {
+    private Long id;
     private String username;
     private String email;
-    private List<TransactionDto> transactionDtos;
-    private List<TokenStatisticsDto> tokenStatisticsDtos;
+    private String password;
+    private List<TransactionDto> transactions;
+    private List<TokenStatisticsDto> tokens;
 
 
     public UserDto() {
     }
 
-    public UserDto(String userName, String email, List<TransactionDto> orders,List<TokenStatisticsDto> tokenStatisticsDtos) {
+    public UserDto(Long id,String userName, String email,String password,List<TransactionDto> transactions,List<TokenStatisticsDto> tokens) {
+        this.id = id;
         this.username = userName;
         this.email = email;
-        this.transactionDtos = orders;
-        this.tokenStatisticsDtos = tokenStatisticsDtos;
+        this.password = password;
+        this.transactions = transactions;
+        this.tokens = tokens;
 
     }
 }
