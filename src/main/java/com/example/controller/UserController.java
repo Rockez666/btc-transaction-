@@ -11,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @Controller
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -22,6 +24,11 @@ public class UserController {
     public ResponseEntity<String> createUser(@Valid @RequestBody CreateUserCommand createCommand) {
         userService.createUser(createCommand);
         return ResponseEntity.ok().body("User created");
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getUsers() {
+        return ResponseEntity.ok().body(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
@@ -36,7 +43,7 @@ public class UserController {
         return ResponseEntity.ok().body(userDto);
     }
 
-    @DeleteMapping("/deleteUser/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserByID(@PathVariable long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok().body("User deleted");

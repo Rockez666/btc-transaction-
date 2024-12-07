@@ -1,14 +1,15 @@
 package com.example.enums;
 
+import com.example.exception.TransactionTypeNotFoundException;
 import lombok.Getter;
 
 import java.util.Arrays;
 
 @Getter
 public enum TransactionType {
-    BUY("Buy/MARKET"),
-    SELL("Sell/MARKET");
-
+    BUY("Buy"),
+    SELL("Sell"),
+    TRADE("Trade");
 
     private final String transaction;
 
@@ -20,6 +21,6 @@ public enum TransactionType {
         return Arrays.stream(TransactionType.values())
                 .filter(value -> value.getTransaction().equalsIgnoreCase(transaction))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new TransactionTypeNotFoundException("Transaction type not found") );
     }
 }

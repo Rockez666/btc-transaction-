@@ -23,7 +23,6 @@ public class Transaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    private Long idUserToTrade;
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
     @Enumerated(EnumType.STRING)
@@ -48,7 +47,6 @@ public class Transaction {
     public static BigDecimal calculateAveragePurchasePrice(List<Transaction> transactions, Cryptocurrency cryptocurrency) {
         BigDecimal totalCost = BigDecimal.ZERO;
         BigDecimal totalQuantity = BigDecimal.ZERO;
-
 
         for (Transaction transaction : transactions) {
             if (transaction.getCryptocurrency().equals(cryptocurrency) && transaction.getTransactionType() == TransactionType.BUY) {
