@@ -44,6 +44,7 @@ public class Transaction {
         this.creationDate = LocalDate.now();
     }
 
+
     public static BigDecimal calculateAveragePurchasePrice(List<Transaction> transactions, Cryptocurrency cryptocurrency) {
         BigDecimal totalCost = BigDecimal.ZERO;
         BigDecimal totalQuantity = BigDecimal.ZERO;

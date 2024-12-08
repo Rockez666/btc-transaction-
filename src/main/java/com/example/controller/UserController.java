@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable long id) {
+    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         UserDto userDto = userService.getUserDtoById(id);
         return ResponseEntity.ok().body(userDto);
     }
@@ -44,7 +44,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUserByID(@PathVariable long id) {
+    public ResponseEntity<String> deleteUserByID(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok().body("User deleted");
     }
