@@ -7,6 +7,7 @@ import com.example.entity.User;
 import com.example.enums.Cryptocurrency;
 import com.example.enums.TransactionType;
 import com.example.exception.NotEnoughQuantityToSellException;
+import com.example.exception.TransactionIsNullException;
 import com.example.repository.TransactionRepository;
 import com.example.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,15 +42,11 @@ public class TransactionService {
         Cryptocurrency cryptocurrency = Cryptocurrency.getCryptocurrency(command.getCryptocurrency());
         BigDecimal price = command.getPrice();
         BigDecimal quantity = command.getQuantity();
-        if (transactionType == TransactionType.BUY || transactionType == TransactionType.SELL) {
-            return new Transaction(user, transactionType, cryptocurrency, price, quantity);
-        }
-        return null;
+        return new Transaction(user, transactionType, cryptocurrency, price, quantity);
+
     }
 
     private void updateTokenStatistics(User user, TokenStatistics tokenStatistics, CreateTransactionCommand command, Transaction transaction) {
-
-
         if (transaction.getTransactionType() == TransactionType.BUY) {
             tokenStatistics.addTokens(command.getQuantity());
         } else if (transaction.getTransactionType() == TransactionType.SELL) {

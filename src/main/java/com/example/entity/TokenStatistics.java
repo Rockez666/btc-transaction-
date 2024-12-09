@@ -1,6 +1,7 @@
 package com.example.entity;
 
 import com.example.enums.Cryptocurrency;
+import com.example.exception.AmountMustBeGreaterThanZeroException;
 import com.example.exception.NotEnoughQuantityToSellException;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -44,12 +45,13 @@ public class TokenStatistics {
     }
     public void addTokens(BigDecimal amountTokens) {
         Optional.ofNullable(amountTokens)
-                .filter(amount -> amount.compareTo(BigDecimal.ZERO) > 0 && totalTokens.compareTo(amount) >= 0)
+                .filter(amount -> amount.compareTo(BigDecimal.ZERO) > 0)
                 .ifPresentOrElse(amount -> this.totalTokens = this.totalTokens.add(amount),
                         () -> {
-                    throw new NotEnoughQuantityToSellException("Not enough quantity to trade");
+                            throw new AmountMustBeGreaterThanZeroException("Amount must be greater than zero");
                         });
     }
+
 
     @Override
     public boolean equals(Object o) {
