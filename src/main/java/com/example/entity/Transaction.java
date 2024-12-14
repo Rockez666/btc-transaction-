@@ -21,8 +21,11 @@ public class Transaction {
     @SequenceGenerator(name = "transaction_seq", sequenceName = "transaction_seq", allocationSize = 1)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "userRecipient_id")
+    private User userRecipient;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userSender_id")
+    private User userSender;
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
     @Enumerated(EnumType.STRING)
@@ -35,8 +38,17 @@ public class Transaction {
     }
 
    
-    public Transaction(User user, TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price, BigDecimal quantityInTransaction) {
-        this.user = user;
+    public Transaction(User userRecipient, TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price, BigDecimal quantityInTransaction) {
+        this.userRecipient = userRecipient;
+        this.transactionType = transactionType;
+        this.cryptocurrency = cryptocurrency;
+        this.price = price;
+        this.quantityInTransaction = quantityInTransaction;
+        this.creationDate = LocalDate.now();
+    }
+    public Transaction(User userRecipient,User userSender,TransactionType transactionType, Cryptocurrency cryptocurrency,BigDecimal price, BigDecimal quantityInTransaction) {
+        this.userRecipient = userRecipient;
+        this.userSender = userSender;
         this.transactionType = transactionType;
         this.cryptocurrency = cryptocurrency;
         this.price = price;

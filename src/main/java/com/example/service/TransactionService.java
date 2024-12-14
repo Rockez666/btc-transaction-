@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,25 +27,31 @@ public class TransactionService {
 
     @Transactional
     public void createTransactionToUser(CreateTransactionCommand command) {
-        User user = userService.getUserEntityById(command.getUserId());
-        TokenStatistics tokenStatisticsUserReceives = getOrCreateTokenStatistics(user, command.getCryptocurrency());
+        User userRecipient = userService.getUserEntityById(command.getUserIdRecipient());
+        TokenStatistics tokenStatisticsUserReceives = getOrCreateTokenStatistics(userRecipient, command.getCryptocurrency());
         Transaction transaction = createTransaction(command);
-        user.getTransactions().add(transaction);
+        userRecipient.getTransactions().add(transaction);
         validateTransaction(command, tokenStatisticsUserReceives);
 
-        updateTokenStatistics(user, tokenStatisticsUserReceives, command, transaction);
-        userRepository.save(user);
+        updateTokenStatistics(userRecipient, tokenStatisticsUserReceives, command, transaction);
+        userRepository.save(userRecipient);
         transactionRepository.save(transaction);
     }
 
     private Transaction createTransaction(CreateTransactionCommand command) {
-        User user = userService.getUserEntityById(command.getUserId());
+        User userSender = userService.getUserEntityById(command.getUserIdSender());
+        User userRecipient = userService.getUserEntityById(command.getUserIdRecipient());
         TransactionType transactionType = TransactionType.getTransactionType(command.getTransactionType());
         Cryptocurrency cryptocurrency = Cryptocurrency.getCryptocurrency(command.getCryptocurrency());
         BigDecimal price = command.getPrice();
         BigDecimal quantity = command.getQuantity();
-        return new Transaction(user, transactionType, cryptocurrency, price, quantity);
-
+        if (transactionType == TransactionType.BUY || transactionType == TransactionType.SELL) {
+            return new Transaction(userRecipient, transactionType, cryptocurrency, price, quantity);
+        } else if (transactionType == TransactionType.TRADE) {
+            return new Transaction(userRecipient, userSender, transactionType, cryptocurrency, price, quantity);
+        } else {
+            throw new TransactionIsNullException("Error create transaction: transaction is null");
+        }
     }
 
     private void updateTokenStatistics(User user, TokenStatistics tokenStatistics, CreateTransactionCommand command, Transaction transaction) {

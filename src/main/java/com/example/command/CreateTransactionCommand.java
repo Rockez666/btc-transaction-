@@ -10,7 +10,9 @@ import java.time.LocalDate;
 @Data
 public class CreateTransactionCommand {
     @Positive(message = "UserId should be positive")
-    private Long userId;
+    private Long userIdSender;
+    @Positive(message = "UserId should be positive")
+    private Long userIdRecipient;
     @NotBlank(message = "transactionType is mandatory")
     private String transactionType;
     @NotBlank(message = "cryptocurrency is mandatory")
@@ -25,8 +27,17 @@ public class CreateTransactionCommand {
         this.creationDate = LocalDate.now();
     }
 
-    public CreateTransactionCommand(Long userId, String transactionType, String cryptocurrency, BigDecimal price, BigDecimal quantity) {
-        this.userId = userId;
+    public CreateTransactionCommand(Long userIdRecipient, String transactionType, String cryptocurrency, BigDecimal price, BigDecimal quantity) {
+        this.userIdRecipient = userIdRecipient;
+        this.transactionType = transactionType;
+        this.cryptocurrency = cryptocurrency;
+        this.price = price;
+        this.quantity = quantity;
+        this.creationDate = LocalDate.now();
+    }
+    public CreateTransactionCommand(Long userIdSender,Long userIdRecipient, String transactionType, String cryptocurrency, BigDecimal price, BigDecimal quantity) {
+        this.userIdSender = userIdSender;
+        this.userIdRecipient = userIdRecipient;
         this.transactionType = transactionType;
         this.cryptocurrency = cryptocurrency;
         this.price = price;
