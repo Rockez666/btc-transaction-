@@ -23,7 +23,6 @@ public class User {
     private String username;
     private String email;
     private String password;
-    private BigDecimal tradedEquivalent;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Transaction> transactions = new ArrayList<>();
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

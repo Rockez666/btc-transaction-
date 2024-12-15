@@ -17,7 +17,8 @@ public class TokenStatisticsMapper {
                 tokenStatistics.getCryptocurrency(),
                 tokenStatistics.getTotalTokens(),
                 tokenStatistics.getAveragePurchasePrice(),
-                tokenStatistics.getAverageSellPrice()
+                tokenStatistics.getAverageSellPrice(),
+                tokenStatistics.getEquivalentCrypto()
         );
 
     }

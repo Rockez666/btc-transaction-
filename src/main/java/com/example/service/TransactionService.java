@@ -1,9 +1,7 @@
 package com.example.service;
 
 import com.example.command.CreateTransactionCommand;
-import com.example.entity.TokenStatistics;
-import com.example.entity.Transaction;
-import com.example.entity.User;
+import com.example.entity.*;
 import com.example.enums.Cryptocurrency;
 import com.example.enums.TransactionType;
 import com.example.exception.NotEnoughQuantityToSellException;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,72 +21,77 @@ public class TransactionService {
     private final UserService userService;
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
+    private final CryptoCalculate cryptoCalculate;
 
     @Transactional
     public void createTransactionToUser(CreateTransactionCommand command) {
-        User userRecipient = userService.getUserEntityById(command.getUserIdRecipient());
-        TokenStatistics tokenStatisticsUserReceives = getOrCreateTokenStatistics(userRecipient, command.getCryptocurrency());
-        Transaction transaction = createTransaction(command);
-        userRecipient.getTransactions().add(transaction);
-        validateTransaction(command, tokenStatisticsUserReceives);
+        User mainUser = userService.getUserEntityById(command.getUserIdRecipient());
+List<Transaction> transactions = mainUser.getTransactions();
+        TransactionType transactionType = TransactionType.getTransactionType(command.getTransactionType());
+        Cryptocurrency cryptocurrency = Cryptocurrency.getCryptocurrency(command.getCryptocurrency());
 
-        updateTokenStatistics(userRecipient, tokenStatisticsUserReceives, command, transaction);
-        userRepository.save(userRecipient);
+
+        BigDecimal price = command.getPrice();
+        BigDecimal quantity = command.getQuantity();
+        Transaction transaction = createTransaction(transactionType,cryptocurrency,price,quantity,mainUser);
+
+        TokenStatistics tokenStatisticsUserRecipient = getOrCreateTokenStatistics(mainUser,cryptocurrency);
+
+        mainUser.getTransactions().add(transaction);
+        validateTransaction(command, tokenStatisticsUserRecipient);
+
+        updateTokenStatistics(transaction,tokenStatisticsUserRecipient,quantity,mainUser,cryptocurrency,transactions);
+        userRepository.save(mainUser);
         transactionRepository.save(transaction);
     }
 
-    private Transaction createTransaction(CreateTransactionCommand command) {
-        User userSender = userService.getUserEntityById(command.getUserIdSender());
-        User userRecipient = userService.getUserEntityById(command.getUserIdRecipient());
-        TransactionType transactionType = TransactionType.getTransactionType(command.getTransactionType());
-        Cryptocurrency cryptocurrency = Cryptocurrency.getCryptocurrency(command.getCryptocurrency());
-        BigDecimal price = command.getPrice();
-        BigDecimal quantity = command.getQuantity();
+    private Transaction createTransaction(TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price, BigDecimal quantity, User mainUser) {
         if (transactionType == TransactionType.BUY || transactionType == TransactionType.SELL) {
-            return new Transaction(userRecipient, transactionType, cryptocurrency, price, quantity);
-        } else if (transactionType == TransactionType.TRADE) {
-            return new Transaction(userRecipient, userSender, transactionType, cryptocurrency, price, quantity);
+            return new Transaction(mainUser, transactionType, cryptocurrency, price, quantity);
         } else {
-            throw new TransactionIsNullException("Error create transaction: transaction is null");
+            throw new TransactionIsNullException("Error creating transaction: transaction is null");
         }
     }
 
-    private void updateTokenStatistics(User user, TokenStatistics tokenStatistics, CreateTransactionCommand command, Transaction transaction) {
+    private void updateTokenStatistics(Transaction transaction,TokenStatistics tokenStatistics,BigDecimal quantity,User mainUser,
+                                       Cryptocurrency cryptocurrency,List<Transaction> userTransactions) {
         if (transaction.getTransactionType() == TransactionType.BUY) {
-            tokenStatistics.addTokens(command.getQuantity());
+            tokenStatistics.addTokens(quantity);
         } else if (transaction.getTransactionType() == TransactionType.SELL) {
-            tokenStatistics.withdrawTokens(command.getQuantity());
-        } 
-
-        BigDecimal avgPurchasePrice = Transaction.calculateAveragePurchasePrice(user.getTransactions(), Cryptocurrency.getCryptocurrency(command.getCryptocurrency()));
-        BigDecimal avgSellPrice = Transaction.calculateAverageSellPrice(user.getTransactions(), Cryptocurrency.getCryptocurrency(command.getCryptocurrency()));
-
+            tokenStatistics.withdrawTokens(quantity);
+        }
+        BigDecimal totalTokens = tokenStatistics.getTotalTokens();
+        BigDecimal avgPurchasePrice = cryptoCalculate.calculateAveragePurchasePrice(userTransactions, cryptocurrency);
+        BigDecimal avgSellPrice = cryptoCalculate.calculateAverageSellPrice(userTransactions,cryptocurrency);
+        BigDecimal equivalentCrypto = cryptoCalculate.getEquivalentInUSD(avgPurchasePrice,totalTokens);
         tokenStatistics.setAveragePurchasePrice(avgPurchasePrice);
         tokenStatistics.setAverageSellPrice(avgSellPrice);
+        tokenStatistics.setEquivalentCrypto(equivalentCrypto);
+
 
     }
 
-    private TokenStatistics getOrCreateTokenStatistics(User user, String cryptocurrency) {
-        Cryptocurrency cryptoEnum = Cryptocurrency.getCryptocurrency(cryptocurrency);
-        return user.getTokenStatistics().stream()
-                .filter(statistics -> statistics.getCryptocurrency().equals(cryptoEnum))
+    private TokenStatistics getOrCreateTokenStatistics(User mainUser, Cryptocurrency cryptocurrency) {
+        return mainUser.getTokenStatistics().stream()
+                .filter(statistics -> statistics.getCryptocurrency().equals(cryptocurrency))
                 .findFirst()
-                .orElseGet(() -> createNewTokenStatistics(user, cryptoEnum));
+                .orElseGet(() -> createNewTokenStatistics(mainUser, cryptocurrency));
     }
 
-    private TokenStatistics createNewTokenStatistics(User userReceives, Cryptocurrency cryptoEnum) {
-        TokenStatistics tokenStatistics = new TokenStatistics(cryptoEnum, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        userReceives.getTokenStatistics().add(tokenStatistics);
+    private TokenStatistics createNewTokenStatistics(User mainUser, Cryptocurrency cryptoEnum) {
+        TokenStatistics tokenStatistics = new TokenStatistics(cryptoEnum, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        mainUser.getTokenStatistics().add(tokenStatistics);
         return tokenStatistics;
     }
 
-    private void validateTransaction(CreateTransactionCommand command, TokenStatistics tokenStatisticsUserReceives) {
+    private void validateTransaction(CreateTransactionCommand command, TokenStatistics tokenStatisticsUserSender) {
         TransactionType transactionType = TransactionType.getTransactionType(command.getTransactionType());
         if (transactionType == TransactionType.SELL) {
-            if (tokenStatisticsUserReceives.getTotalTokens().compareTo(command.getQuantity()) < 0) {
+            if (tokenStatisticsUserSender.getTotalTokens().compareTo(command.getQuantity()) < 0) {
                 throw new NotEnoughQuantityToSellException("Not enough quantity to sell");
             }
         }
+
     }
 }
 
