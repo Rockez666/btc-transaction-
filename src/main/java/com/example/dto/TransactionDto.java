@@ -13,16 +13,18 @@ public class TransactionDto {
     private Cryptocurrency cryptocurrency;
     private BigDecimal price;
     private BigDecimal quantityInTransaction;
+    private BigDecimal equivalentInUSD;
 
 
     public TransactionDto() {
     }
 
-    public TransactionDto(Long userId, TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price, BigDecimal quantity) {
+    public TransactionDto(Long userId, TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price, BigDecimal quantity, BigDecimal equivalentInUSD) {
         this.userId = userId;
         this.transactionType = transactionType;
         this.cryptocurrency = cryptocurrency;
         this.price = price;
         this.quantityInTransaction = quantity;
+        this.equivalentInUSD = equivalentInUSD;
     }
 }

@@ -28,19 +28,26 @@ public class Transaction {
     private Cryptocurrency cryptocurrency;
     private BigDecimal price;
     private BigDecimal quantityInTransaction;
+    private BigDecimal equivalentInUSD;
     private LocalDate creationDate = LocalDate.now();
 
     public Transaction() {
     }
 
    
-    public Transaction(User userRecipient, TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price, BigDecimal quantityInTransaction) {
+    public Transaction(User userRecipient, TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price,
+                       BigDecimal quantityInTransaction, BigDecimal equivalentInUSD) {
         this.userRecipient = userRecipient;
         this.transactionType = transactionType;
         this.cryptocurrency = cryptocurrency;
         this.price = price;
         this.quantityInTransaction = quantityInTransaction;
+        this.equivalentInUSD = equivalentInUSD;
         this.creationDate = LocalDate.now();
+    }
+
+    public BigDecimal getEquivalentInTransaction() {
+        return this.quantityInTransaction.multiply(this.price);
     }
     @Override
     public boolean equals(Object o) {

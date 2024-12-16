@@ -26,10 +26,9 @@ public class TransactionService {
     @Transactional
     public void createTransactionToUser(CreateTransactionCommand command) {
         User mainUser = userService.getUserEntityById(command.getUserIdRecipient());
-List<Transaction> transactions = mainUser.getTransactions();
+        List<Transaction> transactions = mainUser.getTransactions();
         TransactionType transactionType = TransactionType.getTransactionType(command.getTransactionType());
         Cryptocurrency cryptocurrency = Cryptocurrency.getCryptocurrency(command.getCryptocurrency());
-
 
         BigDecimal price = command.getPrice();
         BigDecimal quantity = command.getQuantity();
@@ -47,7 +46,7 @@ List<Transaction> transactions = mainUser.getTransactions();
 
     private Transaction createTransaction(TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price, BigDecimal quantity, User mainUser) {
         if (transactionType == TransactionType.BUY || transactionType == TransactionType.SELL) {
-            return new Transaction(mainUser, transactionType, cryptocurrency, price, quantity);
+            return new Transaction(mainUser, transactionType, cryptocurrency, price, quantity,BigDecimal.ZERO);
         } else {
             throw new TransactionIsNullException("Error creating transaction: transaction is null");
         }
@@ -60,10 +59,9 @@ List<Transaction> transactions = mainUser.getTransactions();
         } else if (transaction.getTransactionType() == TransactionType.SELL) {
             tokenStatistics.withdrawTokens(quantity);
         }
-        BigDecimal totalTokens = tokenStatistics.getTotalTokens();
         BigDecimal avgPurchasePrice = cryptoCalculate.calculateAveragePurchasePrice(userTransactions, cryptocurrency);
         BigDecimal avgSellPrice = cryptoCalculate.calculateAverageSellPrice(userTransactions,cryptocurrency);
-        BigDecimal equivalentCrypto = cryptoCalculate.getEquivalentInUSD(avgPurchasePrice,totalTokens);
+        BigDecimal equivalentCrypto = cryptoCalculate.getEquivalentUsdForCrypto(userTransactions,cryptocurrency);
         tokenStatistics.setAveragePurchasePrice(avgPurchasePrice);
         tokenStatistics.setAverageSellPrice(avgSellPrice);
         tokenStatistics.setEquivalentCrypto(equivalentCrypto);
