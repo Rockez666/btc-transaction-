@@ -15,7 +15,7 @@ public class TransactionMapper {
         }
 
         return new TransactionDto(
-                transaction.getId(),
+                transaction.getUser().getId(),
                 transaction.getTransactionType(),
                 transaction.getCryptocurrency(),
                 transaction.getPrice(),

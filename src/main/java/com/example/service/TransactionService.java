@@ -25,28 +25,28 @@ public class TransactionService {
 
     @Transactional
     public void createTransactionToUser(CreateTransactionCommand command) {
-        User mainUser = userService.getUserEntityById(command.getUserIdRecipient());
-        List<Transaction> transactions = mainUser.getTransactions();
+        User user = userService.getUserEntityById(command.getUserId());
+        List<Transaction> transactions = user.getTransactions();
         TransactionType transactionType = TransactionType.getTransactionType(command.getTransactionType());
         Cryptocurrency cryptocurrency = Cryptocurrency.getCryptocurrency(command.getCryptocurrency());
 
         BigDecimal price = command.getPrice();
         BigDecimal quantity = command.getQuantity();
-        Transaction transaction = createTransaction(transactionType,cryptocurrency,price,quantity,mainUser);
+        Transaction transaction = createTransaction(transactionType,cryptocurrency,price,quantity,user);
 
-        TokenStatistics tokenStatisticsUserRecipient = getOrCreateTokenStatistics(mainUser,cryptocurrency);
+        TokenStatistics tokenStatisticsUserRecipient = getOrCreateTokenStatistics(user,cryptocurrency);
 
-        mainUser.getTransactions().add(transaction);
+        user.getTransactions().add(transaction);
         validateTransaction(command, tokenStatisticsUserRecipient);
 
-        updateTokenStatistics(transaction,tokenStatisticsUserRecipient,quantity,mainUser,cryptocurrency,transactions);
-        userRepository.save(mainUser);
+        updateTokenStatistics(transaction,tokenStatisticsUserRecipient,quantity,user,cryptocurrency,transactions);
+        userRepository.save(user);
         transactionRepository.save(transaction);
     }
 
-    private Transaction createTransaction(TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price, BigDecimal quantity, User mainUser) {
+    private Transaction createTransaction(TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price, BigDecimal quantity, User user) {
         if (transactionType == TransactionType.BUY || transactionType == TransactionType.SELL) {
-            return new Transaction(mainUser, transactionType, cryptocurrency, price, quantity,BigDecimal.ZERO);
+            return new Transaction(user, transactionType, cryptocurrency, price, quantity,BigDecimal.ZERO);
         } else {
             throw new TransactionIsNullException("Error creating transaction: transaction is null");
         }
@@ -62,6 +62,7 @@ public class TransactionService {
         BigDecimal avgPurchasePrice = cryptoCalculate.calculateAveragePurchasePrice(userTransactions, cryptocurrency);
         BigDecimal avgSellPrice = cryptoCalculate.calculateAverageSellPrice(userTransactions,cryptocurrency);
         BigDecimal equivalentCrypto = cryptoCalculate.getEquivalentUsdForCrypto(userTransactions,cryptocurrency);
+        transaction.setEquivalentInUSD(transaction.getEquivalentInTransaction());
         tokenStatistics.setAveragePurchasePrice(avgPurchasePrice);
         tokenStatistics.setAverageSellPrice(avgSellPrice);
         tokenStatistics.setEquivalentCrypto(equivalentCrypto);
