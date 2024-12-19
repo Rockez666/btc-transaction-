@@ -19,8 +19,8 @@ public class TransactionMapper {
                 transaction.getTransactionType(),
                 transaction.getCryptocurrency(),
                 transaction.getPrice(),
-                transaction.getQuantityInTransaction()
-
+                transaction.getQuantityInTransaction(),
+                transaction.getEquivalentInUSD()
                 );
 
     }

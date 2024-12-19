@@ -11,14 +11,16 @@ public class TokenStatisticsDto {
     private BigDecimal totalTokens;
     private BigDecimal averagePurchasePrice;
     private BigDecimal averageSellPrice;
+    private BigDecimal equivalentUsd;
 
     public TokenStatisticsDto() {
     }
 
-    public TokenStatisticsDto(Cryptocurrency cryptocurrency, BigDecimal totalTokens, BigDecimal averagePurchasePrice,BigDecimal averageSellPrice) {
+    public TokenStatisticsDto(Cryptocurrency cryptocurrency, BigDecimal totalTokens, BigDecimal averagePurchasePrice,BigDecimal averageSellPrice, BigDecimal equivalentUsd) {
         this.cryptocurrency = cryptocurrency;
         this.totalTokens = totalTokens;
         this.averagePurchasePrice = averagePurchasePrice;
         this.averageSellPrice = averageSellPrice;
+        this.equivalentUsd = equivalentUsd;
     }
 }

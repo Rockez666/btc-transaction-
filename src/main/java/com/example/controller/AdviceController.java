@@ -45,4 +45,18 @@ public class AdviceController {
     public ResponseEntity<String> handleInvalidPasswordException(InvalidPasswordException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+
+    @ExceptionHandler(TransactionIsNullException.class)
+    public ResponseEntity<String> handleTransactionIsNullException(TransactionIsNullException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(AmountMustBeGreaterThanZeroException.class)
+    public ResponseEntity<String> handleAmountMustBeGreaterThanZeroException(AmountMustBeGreaterThanZeroException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+    @ExceptionHandler(ListIsEmptyException.class)
+    public ResponseEntity<String> handleListIsEmptyException(ListIsEmptyException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 }
