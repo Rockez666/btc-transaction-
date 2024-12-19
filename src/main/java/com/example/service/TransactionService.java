@@ -38,7 +38,7 @@ public class TransactionService {
 
         user.getTransactions().add(transaction);
         validateTransaction(command, tokenStatisticsUserRecipient);
-
+///sdsda
         updateTokenStatistics(transaction,tokenStatisticsUserRecipient,quantity,user,cryptocurrency,transactions);
         userRepository.save(user);
         transactionRepository.save(transaction);
