@@ -25,6 +25,7 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/users/registration", "/users/auth").permitAll()
+                .requestMatchers("/transactions").hasAnyAuthority("USER")
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

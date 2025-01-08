@@ -8,8 +8,7 @@ import java.util.Arrays;
 @Getter
 public enum TransactionType {
     BUY("Buy"),
-    SELL("Sell"),
-    TRADE("Trade");
+    SELL("Sell");
 
     private final String transaction;
 

@@ -4,8 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 public class AuthResult {
     private final boolean success;
     private final String message;

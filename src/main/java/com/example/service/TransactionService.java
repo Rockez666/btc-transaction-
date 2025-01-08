@@ -25,21 +25,21 @@ public class TransactionService {
 
     @Transactional
     public void createTransactionToUser(CreateTransactionCommand command) {
-        User user = userService.getUserEntityById(command.getUserId());
-        List<Transaction> transactions = user.getTransactions();
+        User currentUser = userService.getCurrentUser();
+        List<Transaction> transactions = currentUser.getTransactions();
         TransactionType transactionType = TransactionType.getTransactionType(command.getTransactionType());
         Cryptocurrency cryptocurrency = Cryptocurrency.getCryptocurrency(command.getCryptocurrency());
 
         BigDecimal price = command.getPrice();
         BigDecimal quantity = command.getQuantity();
-        Transaction transaction = createTransaction(transactionType,cryptocurrency,price,quantity,user);
+        Transaction transaction = createTransaction(transactionType,cryptocurrency,price,quantity,currentUser);
 
-        TokenStatistics tokenStatisticsUserRecipient = getOrCreateTokenStatistics(user,cryptocurrency);
+        TokenStatistics tokenStatisticsUserRecipient = getOrCreateTokenStatistics(currentUser,cryptocurrency);
 
-        user.getTransactions().add(transaction);
+        currentUser.getTransactions().add(transaction);
         validateTransaction(command, tokenStatisticsUserRecipient);
         updateTokenStatistics(transaction,tokenStatisticsUserRecipient,quantity,cryptocurrency,transactions);
-        userRepository.save(user);
+        userRepository.save(currentUser);
         transactionRepository.save(transaction);
     }
 

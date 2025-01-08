@@ -33,7 +33,6 @@ public class Transaction {
 
     public Transaction() {
     }
-
    
     public Transaction(User user, TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price,
                        BigDecimal quantityInTransaction, BigDecimal equivalentInUSD) {

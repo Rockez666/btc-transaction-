@@ -57,6 +57,8 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
+
+    @Transactional
     public AuthResult auth(AuthorizationUserCommand request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -92,4 +94,17 @@ public class UserService {
         userRepository.save(user);
 
     }
+
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() == "anonymousUser") {
+            throw new UserNotFoundException("No authenticated user found");
+        }
+        String username = authentication.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Authenticated user not found in the database"));
+    }
+
+
 }
