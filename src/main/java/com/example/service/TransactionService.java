@@ -38,8 +38,7 @@ public class TransactionService {
 
         user.getTransactions().add(transaction);
         validateTransaction(command, tokenStatisticsUserRecipient);
-///sdsda
-        updateTokenStatistics(transaction,tokenStatisticsUserRecipient,quantity,user,cryptocurrency,transactions);
+        updateTokenStatistics(transaction,tokenStatisticsUserRecipient,quantity,cryptocurrency,transactions);
         userRepository.save(user);
         transactionRepository.save(transaction);
     }
@@ -52,7 +51,7 @@ public class TransactionService {
         }
     }
 
-    private void updateTokenStatistics(Transaction transaction,TokenStatistics tokenStatistics,BigDecimal quantity,User mainUser,
+    private void updateTokenStatistics(Transaction transaction,TokenStatistics tokenStatistics,BigDecimal quantity,
                                        Cryptocurrency cryptocurrency,List<Transaction> userTransactions) {
         if (transaction.getTransactionType() == TransactionType.BUY) {
             tokenStatistics.addTokens(quantity);

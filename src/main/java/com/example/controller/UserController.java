@@ -1,27 +1,27 @@
 package com.example.controller;
 
+import com.example.command.AuthResult;
 import com.example.command.AuthorizationUserCommand;
-import com.example.command.CreateUserCommand;
+import com.example.command.RegisterNewUserCommand;
 import com.example.command.UpdateUserCommand;
 import com.example.dto.UserDto;
 import com.example.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @CrossOrigin("*")
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
-    @PostMapping()
-    public ResponseEntity<String> createUser(@Valid @RequestBody CreateUserCommand createCommand) {
+    @PostMapping("/registration")
+    public ResponseEntity<String> registration(@Valid @RequestBody RegisterNewUserCommand createCommand) {
         userService.createUser(createCommand);
         return ResponseEntity.ok().body("User created");
     }
@@ -37,10 +37,10 @@ public class UserController {
         return ResponseEntity.ok().body(userDto);
     }
 
-    @GetMapping("/getUserAuthorization")
-    public ResponseEntity<UserDto> getUserAuthorization(@Valid @RequestBody AuthorizationUserCommand authorizationCommand) {
-        UserDto userDto = userService.getUserByAuthorization(authorizationCommand);
-        return ResponseEntity.ok().body(userDto);
+    @GetMapping("/auth")
+    public ResponseEntity<String> auth(@Valid @RequestBody AuthorizationUserCommand authorizationCommand) {
+        AuthResult authResult = userService.auth(authorizationCommand);
+        return authResult.isSuccess() ? ResponseEntity.ok(authResult.getMessage()) : ResponseEntity.status(401).body(authResult.getMessage());
     }
 
     @DeleteMapping("/{id}")
