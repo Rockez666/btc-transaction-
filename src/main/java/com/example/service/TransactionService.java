@@ -25,7 +25,7 @@ public class TransactionService {
 
     @Transactional
     public void createTransactionToUser(CreateTransactionCommand command) {
-        User currentUser = userService.getCurrentUser();
+         User currentUser = userService.getCurrentUser();
         List<Transaction> transactions = currentUser.getTransactions();
         TransactionType transactionType = TransactionType.getTransactionType(command.getTransactionType());
         Cryptocurrency cryptocurrency = Cryptocurrency.getCryptocurrency(command.getCryptocurrency());
@@ -43,7 +43,8 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
-    private Transaction createTransaction(TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price, BigDecimal quantity, User user) {
+    private Transaction createTransaction(TransactionType transactionType, Cryptocurrency cryptocurrency,
+                                          BigDecimal price, BigDecimal quantity, User user) {
         if (transactionType == TransactionType.BUY || transactionType == TransactionType.SELL) {
             return new Transaction(user, transactionType, cryptocurrency, price, quantity,BigDecimal.ZERO);
         } else {

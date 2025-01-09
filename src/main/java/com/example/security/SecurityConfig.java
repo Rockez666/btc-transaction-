@@ -25,11 +25,9 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/users/registration", "/users/auth").permitAll()
-                .requestMatchers("/transactions").hasAnyAuthority("USER")
-                .anyRequest().authenticated()
+                .requestMatchers("/transactions/createTransaction").permitAll()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
         return http.build();
     }
 

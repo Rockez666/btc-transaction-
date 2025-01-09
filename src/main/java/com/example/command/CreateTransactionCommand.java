@@ -24,7 +24,6 @@ public class CreateTransactionCommand {
     }
 
     public CreateTransactionCommand(String transactionType, String cryptocurrency, BigDecimal price, BigDecimal quantity) {
-
         this.transactionType = transactionType;
         this.cryptocurrency = cryptocurrency;
         this.price = price;

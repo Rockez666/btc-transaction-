@@ -1,11 +1,9 @@
 package com.example.entity;
 
-import com.example.enums.Roles;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +22,6 @@ public class User {
     private String username;
     private String email;
     private String password;
-    @Enumerated(EnumType.STRING)
-    private Roles role;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Transaction> transactions = new ArrayList<>();
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -39,12 +35,7 @@ public class User {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.role = Roles.USER;
         this.creationDate = LocalDate.now();
-    }
-
-    public boolean isAdmin() {
-        return this.role == Roles.ADMIN;
     }
 
     @Override

@@ -9,9 +9,13 @@ import com.example.entity.User;
 import com.example.exception.UserNotFoundException;
 import com.example.mapper.UserMapper;
 import com.example.repository.UserRepository;
+import com.example.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -52,13 +57,7 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-    @Transactional(readOnly = true)
-    public User getUserEntityById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
-    }
 
-
-    @Transactional
     public AuthResult auth(AuthorizationUserCommand request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -67,17 +66,30 @@ public class UserService {
                             request.getPassword()
                     )
             );
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(request.getUsername());
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             return userDetails.isEnabled() ?
                     AuthResult.success("The user has successfully logged in.") :
                     AuthResult.failure("Account is blocked or inactive.");
-
-        } catch (Exception e) {
-            return AuthResult.failure(e.getMessage());
+        } catch (BadCredentialsException e) {
+            return AuthResult.failure("Invalid username or password.");
         }
     }
+
+
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UserNotFoundException("No authenticated user found");
+        }
+        String username = authentication.getPrincipal().getClass().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Authenticated user not found in the database"));
+    }
+
 
 
     @Transactional
@@ -93,17 +105,6 @@ public class UserService {
         user.setEmail(updateUserCommand.getEmail());
         userRepository.save(user);
 
-    }
-
-    @Transactional(readOnly = true)
-    public User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal() == "anonymousUser") {
-            throw new UserNotFoundException("No authenticated user found");
-        }
-        String username = authentication.getName();
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Authenticated user not found in the database"));
     }
 
 
