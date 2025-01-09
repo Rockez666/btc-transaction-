@@ -85,7 +85,7 @@ public class UserService {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new UserNotFoundException("No authenticated user found");
         }
-        String username = authentication.getPrincipal().getClass().getName();
+        String username = authentication.getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Authenticated user not found in the database"));
     }
