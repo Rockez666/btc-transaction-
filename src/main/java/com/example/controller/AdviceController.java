@@ -64,4 +64,9 @@ public class AdviceController {
     public ResponseEntity<String> handleRoleNotFoundException(RoleNotFoundException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+
+    @ExceptionHandler(ThisUserAlreadyExists.class)
+    public ResponseEntity<String> handleThisUserAlreadyExists(ThisUserAlreadyExists e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 }

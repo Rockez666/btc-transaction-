@@ -8,10 +8,7 @@ import com.example.exception.NotEnoughQuantityToSellException;
 import com.example.exception.TransactionIsNullException;
 import com.example.repository.TransactionRepository;
 import com.example.repository.UserRepository;
-import com.example.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +24,7 @@ public class TransactionService {
     private final CryptoCalculate cryptoCalculate;
 
     @Transactional
-    public void createTransactionToUser(CreateTransactionCommand command) {
+    public void createTransaction(CreateTransactionCommand command) {
         User currentUser = userService.getCurrentUser();
 
         List<Transaction> transactions = currentUser.getTransactions();
@@ -74,16 +71,16 @@ public class TransactionService {
 
     }
 
-    private TokenStatistics getOrCreateTokenStatistics(User mainUser, Cryptocurrency cryptocurrency) {
-        return mainUser.getTokenStatistics().stream()
+    private TokenStatistics getOrCreateTokenStatistics(User currentUser, Cryptocurrency cryptocurrency) {
+        return currentUser.getTokenStatistics().stream()
                 .filter(statistics -> statistics.getCryptocurrency().equals(cryptocurrency))
                 .findFirst()
-                .orElseGet(() -> createNewTokenStatistics(mainUser, cryptocurrency));
+                .orElseGet(() -> createNewTokenStatistics(currentUser, cryptocurrency));
     }
 
-    private TokenStatistics createNewTokenStatistics(User mainUser, Cryptocurrency cryptoEnum) {
+    private TokenStatistics createNewTokenStatistics(User currentUser, Cryptocurrency cryptoEnum) {
         TokenStatistics tokenStatistics = new TokenStatistics(cryptoEnum, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
-        mainUser.getTokenStatistics().add(tokenStatistics);
+        currentUser.getTokenStatistics().add(tokenStatistics);
         return tokenStatistics;
     }
 

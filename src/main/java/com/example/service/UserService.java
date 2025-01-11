@@ -6,6 +6,7 @@ import com.example.command.RegisterNewUserCommand;
 import com.example.command.UpdateUserCommand;
 import com.example.dto.UserDto;
 import com.example.entity.User;
+import com.example.exception.ThisUserAlreadyExists;
 import com.example.exception.UserNotFoundException;
 import com.example.mapper.UserMapper;
 import com.example.repository.UserRepository;
@@ -40,6 +41,7 @@ public class UserService {
     @Transactional
     public void createUser(RegisterNewUserCommand createUserCommand) {
         String username = createUserCommand.getUsername();
+        checkIfUserExists(username);
         String email = createUserCommand.getEmail();
         String password = passwordEncoder.encode(createUserCommand.getPassword());
         User newUser = new User(username, email, password);
@@ -82,6 +84,13 @@ public class UserService {
         user.setPassword(updateUserCommand.getPassword());
         user.setEmail(updateUserCommand.getEmail());
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    protected void checkIfUserExists(String username) {
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new ThisUserAlreadyExists("This user already exists");
+        }
     }
 
 
