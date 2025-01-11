@@ -8,7 +8,10 @@ import com.example.exception.NotEnoughQuantityToSellException;
 import com.example.exception.TransactionIsNullException;
 import com.example.repository.TransactionRepository;
 import com.example.repository.UserRepository;
+import com.example.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,20 +28,21 @@ public class TransactionService {
 
     @Transactional
     public void createTransactionToUser(CreateTransactionCommand command) {
-         User currentUser = userService.getCurrentUser();
+        User currentUser = userService.getCurrentUser();
+
         List<Transaction> transactions = currentUser.getTransactions();
         TransactionType transactionType = TransactionType.getTransactionType(command.getTransactionType());
         Cryptocurrency cryptocurrency = Cryptocurrency.getCryptocurrency(command.getCryptocurrency());
 
         BigDecimal price = command.getPrice();
         BigDecimal quantity = command.getQuantity();
-        Transaction transaction = createTransaction(transactionType,cryptocurrency,price,quantity,currentUser);
+        Transaction transaction = createTransaction(transactionType, cryptocurrency, price, quantity, currentUser);
 
-        TokenStatistics tokenStatisticsUserRecipient = getOrCreateTokenStatistics(currentUser,cryptocurrency);
+        TokenStatistics tokenStatisticsUserRecipient = getOrCreateTokenStatistics(currentUser, cryptocurrency);
 
         currentUser.getTransactions().add(transaction);
         validateTransaction(command, tokenStatisticsUserRecipient);
-        updateTokenStatistics(transaction,tokenStatisticsUserRecipient,quantity,cryptocurrency,transactions);
+        updateTokenStatistics(transaction, tokenStatisticsUserRecipient, quantity, cryptocurrency, transactions);
         userRepository.save(currentUser);
         transactionRepository.save(transaction);
     }
@@ -46,22 +50,22 @@ public class TransactionService {
     private Transaction createTransaction(TransactionType transactionType, Cryptocurrency cryptocurrency,
                                           BigDecimal price, BigDecimal quantity, User user) {
         if (transactionType == TransactionType.BUY || transactionType == TransactionType.SELL) {
-            return new Transaction(user, transactionType, cryptocurrency, price, quantity,BigDecimal.ZERO);
+            return new Transaction(user, transactionType, cryptocurrency, price, quantity, BigDecimal.ZERO);
         } else {
             throw new TransactionIsNullException("Error creating transaction: transaction is null");
         }
     }
 
-    private void updateTokenStatistics(Transaction transaction,TokenStatistics tokenStatistics,BigDecimal quantity,
-                                       Cryptocurrency cryptocurrency,List<Transaction> userTransactions) {
+    private void updateTokenStatistics(Transaction transaction, TokenStatistics tokenStatistics, BigDecimal quantity,
+                                       Cryptocurrency cryptocurrency, List<Transaction> userTransactions) {
         if (transaction.getTransactionType() == TransactionType.BUY) {
             tokenStatistics.addTokens(quantity);
         } else if (transaction.getTransactionType() == TransactionType.SELL) {
             tokenStatistics.withdrawTokens(quantity);
         }
         BigDecimal avgPurchasePrice = cryptoCalculate.calculateAveragePurchasePrice(userTransactions, cryptocurrency);
-        BigDecimal avgSellPrice = cryptoCalculate.calculateAverageSellPrice(userTransactions,cryptocurrency);
-        BigDecimal equivalentCrypto = cryptoCalculate.getEquivalentUsdForCrypto(userTransactions,cryptocurrency);
+        BigDecimal avgSellPrice = cryptoCalculate.calculateAverageSellPrice(userTransactions, cryptocurrency);
+        BigDecimal equivalentCrypto = cryptoCalculate.getEquivalentUsdForCrypto(userTransactions, cryptocurrency);
         transaction.setEquivalentInUSD(transaction.getEquivalentInTransaction());
         tokenStatistics.setAveragePurchasePrice(avgPurchasePrice);
         tokenStatistics.setAverageSellPrice(avgSellPrice);

@@ -24,7 +24,6 @@ public class TransactionController {
     @PostMapping("/createTransaction")
     public ResponseEntity<String> createTransaction(@Valid @RequestBody CreateTransactionCommand command) {
         transactionService.createTransactionToUser(command);
-
         return ResponseEntity.ok("Transaction Created");
     }
 }

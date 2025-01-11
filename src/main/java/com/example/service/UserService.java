@@ -57,37 +57,15 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-
-    public AuthResult auth(AuthorizationUserCommand request) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getUsername(),
-                            request.getPassword()
-                    )
-            );
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-            return userDetails.isEnabled() ?
-                    AuthResult.success("The user has successfully logged in.") :
-                    AuthResult.failure("Account is blocked or inactive.");
-        } catch (BadCredentialsException e) {
-            return AuthResult.failure("Invalid username or password.");
-        }
+    public User getCurrentUser() {
+        String username = getAuthenticatedUsername();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
-
-    @Transactional(readOnly = true)
-    public User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new UserNotFoundException("No authenticated user found");
-        }
-        String username = authentication.getName();
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException("Authenticated user not found in the database"));
+    private String getAuthenticatedUsername() {
+        UserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getUsername();
     }
 
 
@@ -104,7 +82,6 @@ public class UserService {
         user.setPassword(updateUserCommand.getPassword());
         user.setEmail(updateUserCommand.getEmail());
         userRepository.save(user);
-
     }
 
 
