@@ -1,24 +1,24 @@
 package com.example.service;
 
-import com.example.command.AuthResult;
 import com.example.command.AuthorizationUserCommand;
 import com.example.command.RegisterNewUserCommand;
-import com.example.command.UpdateUserCommand;
+import com.example.command.UpdateUserPasswordCommand;
 import com.example.dto.UserDto;
 import com.example.entity.User;
+import com.example.enums.Role;
+import com.example.exception.RoleNotFoundException;
 import com.example.exception.ThisUserAlreadyExists;
 import com.example.exception.UserNotFoundException;
 import com.example.mapper.UserMapper;
 import com.example.repository.UserRepository;
 import com.example.security.CustomUserDetails;
+import com.example.utill.JWTUtill;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -37,6 +37,16 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService customUserDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final JWTUtill jwtTokenUtil;
+
+    @PostConstruct
+    @Transactional
+    public void init() {
+        User admin = new User("Admin","emailadmin@gmail.com", passwordEncoder.encode("passwordbroskiadmin"));
+        admin.setRole(Role.ADMIN);
+        checkIfUserExists(admin.getUsername());
+        userRepository.save(admin);
+    }
 
     @Transactional
     public void createUser(RegisterNewUserCommand createUserCommand) {
@@ -44,8 +54,29 @@ public class UserService {
         checkIfUserExists(username);
         String email = createUserCommand.getEmail();
         String password = passwordEncoder.encode(createUserCommand.getPassword());
-        User newUser = new User(username, email, password);
-        userRepository.save(newUser);
+        User defaultUser = new User(username, email, password);
+        userRepository.save(defaultUser);
+    }
+
+    public Map<String, String> login(AuthorizationUserCommand authorizationUserCommand) {
+        UsernamePasswordAuthenticationToken authInPutToken = new UsernamePasswordAuthenticationToken
+                (authorizationUserCommand.getUsername(), authorizationUserCommand.getPassword());
+        try {
+            authenticationManager.authenticate(authInPutToken);
+
+        } catch (BadCredentialsException e) {
+            return Map.of("message", "incorrect credentials");
+        }
+        CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
+        Role role = userDetails.getAuthorities()
+                .stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .map(Role::valueOf)
+                .orElseThrow(() -> new RoleNotFoundException("Role not found exception"));
+
+        String token = jwtTokenUtil.generateToken(authorizationUserCommand.getUsername(), role);
+        return Map.of("jwt-token", token);
     }
 
     @Transactional(readOnly = true)
@@ -71,18 +102,14 @@ public class UserService {
     }
 
 
-
     @Transactional
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
 
     @Transactional
-    public void updateUser(UpdateUserCommand updateUserCommand) {
-        User user = userRepository.findById(updateUserCommand.getUserId()).orElseThrow(() -> new UserNotFoundException("User not found"));
-        user.setUsername(updateUserCommand.getUsername());
-        user.setPassword(updateUserCommand.getPassword());
-        user.setEmail(updateUserCommand.getEmail());
+    public void updateUser(UpdateUserPasswordCommand updateUserCommand) {
+        User user = getCurrentUser();
         userRepository.save(user);
     }
 
@@ -92,6 +119,5 @@ public class UserService {
             throw new ThisUserAlreadyExists("This user already exists");
         }
     }
-
-
 }
+

@@ -1,1 +1,9 @@
-GET http://localhost:8080/users/registration
+POST http://localhost:8080/users/registration
+Content-Type: application/json
+
+{
+  "username": "Rockez7666",
+  "email": "asdasda@gmail.com",
+  "password": "asdadadad"
+}
+

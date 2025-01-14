@@ -27,8 +27,9 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/users/registration").permitAll()
-                .anyRequest().permitAll()
+                .requestMatchers("/users/registration","/users/login").permitAll()
+                .requestMatchers("/transactions/createTransaction").hasRole("USER")
+                .requestMatchers("/adminPanel/hello").hasRole("ADMIN")
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
