@@ -36,7 +36,8 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody AuthorizationUserCommand authorizationUserCommand) {
-        return ResponseEntity.ok().body(userService.login(authorizationUserCommand));
+       Map<String,String> responseMap = userService.login(authorizationUserCommand);
+        return ResponseEntity.ok().body(responseMap);
     }
 
 

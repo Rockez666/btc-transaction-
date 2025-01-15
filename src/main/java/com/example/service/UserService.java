@@ -6,6 +6,7 @@ import com.example.command.UpdateUserPasswordCommand;
 import com.example.dto.UserDto;
 import com.example.entity.User;
 import com.example.enums.Role;
+import com.example.exception.InvalidPasswordException;
 import com.example.exception.RoleNotFoundException;
 import com.example.exception.ThisUserAlreadyExists;
 import com.example.exception.UserNotFoundException;
@@ -65,7 +66,7 @@ public class UserService {
             authenticationManager.authenticate(authInPutToken);
 
         } catch (BadCredentialsException e) {
-            return Map.of("message", "incorrect credentials");
+            throw new InvalidPasswordException("Invalid credentials");
         }
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
         Role role = userDetails.getAuthorities()
