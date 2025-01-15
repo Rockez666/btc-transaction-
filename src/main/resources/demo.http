@@ -17,10 +17,19 @@ Content-Type: application/json
   "password": "testpassword"
 }
 
+> {%
+    if (response && response.body) {
+        const responseBody = response.body;
+        client.global.set("jwtToken", responseBody["jwt-token"]);
+    } else {
+        console.error("Response body is undefined or empty.");
+    }
+%}
+
 ### Create Transaction
 POST http://localhost:8080/transactions/createTransaction
 Content-Type: application/json
-Authorization: Bearer <JWT_TOKEN>
+Authorization: Bearer {{jwtToken}}
 
 {
   "transactionType": "buy",
@@ -28,3 +37,9 @@ Authorization: Bearer <JWT_TOKEN>
   "price": 40000.50,
   "quantity": 0.5
 }
+
+
+### Hello Admin
+GET localhost:8080/adminPanel/hello
+Content-Type: application/json
+Authorization: Bearer {{jwtToken}}
