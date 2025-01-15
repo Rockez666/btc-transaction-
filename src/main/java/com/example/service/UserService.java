@@ -67,7 +67,7 @@ public class UserService {
         } catch (BadCredentialsException e) {
             return Map.of("message", "incorrect credentials");
         }
-        CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
         Role role = userDetails.getAuthorities()
                 .stream()
                 .findFirst()
