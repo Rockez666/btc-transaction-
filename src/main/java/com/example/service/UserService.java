@@ -77,6 +77,7 @@ public class UserService {
                 .orElseThrow(() -> new RoleNotFoundException("Role not found exception"));
 
         String token = jwtTokenUtil.generateToken(authorizationUserCommand.getUsername(), role);
+
         return Map.of("jwt-token", token);
     }
 
@@ -108,11 +109,14 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    @Transactional
-    public void updateUser(UpdateUserPasswordCommand updateUserCommand) {
-        User user = getCurrentUser();
-        userRepository.save(user);
-    }
+
+//
+//    @Transactional
+//    public void updateUser(UpdateUserPasswordCommand updateUserCommand) {
+//        User authUser = getCurrentUser();
+//
+//        userRepository.save(user);
+//    }
 
     @Transactional(readOnly = true)
     protected void checkIfUserExists(String username) {

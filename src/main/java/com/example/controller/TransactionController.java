@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class TransactionController {
     private final TransactionService transactionService;
 
-
     @PostMapping("/createTransaction")
     public ResponseEntity<String> createTransaction(@Valid @RequestBody CreateTransactionCommand command) {
         transactionService.createTransaction(command);
         return ResponseEntity.ok("Transaction Created");
     }
+
 }
 
 
