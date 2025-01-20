@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/users/registration","/users/login").permitAll()
+                .requestMatchers("/users/helloUser").hasRole("USER")
                 .requestMatchers("/transactions/createTransaction").hasRole("USER")
                 .requestMatchers("/adminPanel/hello").hasRole("ADMIN")
                 .and()

@@ -2,13 +2,12 @@ package com.example.service;
 
 import com.example.command.AuthorizationUserCommand;
 import com.example.command.RegisterNewUserCommand;
-import com.example.command.UpdateUserPasswordCommand;
 import com.example.dto.UserDto;
 import com.example.entity.User;
 import com.example.enums.Role;
 import com.example.exception.InvalidPasswordException;
 import com.example.exception.RoleNotFoundException;
-import com.example.exception.ThisUserAlreadyExists;
+import com.example.exception.ThisUsernameOrEmailAlreadyExists;
 import com.example.exception.UserNotFoundException;
 import com.example.mapper.UserMapper;
 import com.example.repository.UserRepository;
@@ -39,24 +38,27 @@ public class UserService {
     private final CustomUserDetailsService customUserDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtill jwtTokenUtil;
+    private final EmailService emailService;
+
 
     @PostConstruct
     @Transactional
     public void init() {
-        User admin = new User("Admin","emailadmin@gmail.com", passwordEncoder.encode("passwordbroskiadmin"));
+        User admin = new User("Admin","emailadmin@gmail.com","777", passwordEncoder.encode("passwordbroskiadmin"));
         admin.setRole(Role.ADMIN);
-        checkIfUserExists(admin.getUsername());
+        checkIfUsernameOrEmailExists(admin.getUsername());
         userRepository.save(admin);
     }
 
     @Transactional
     public void createUser(RegisterNewUserCommand createUserCommand) {
         String username = createUserCommand.getUsername();
-        checkIfUserExists(username);
+        checkIfUsernameOrEmailExists(username);
         String email = createUserCommand.getEmail();
+        String verificationCode = VerificationCodeGenerator.generateVerificationCode();
         String password = passwordEncoder.encode(createUserCommand.getPassword());
-        User defaultUser = new User(username, email, password);
-        userRepository.save(defaultUser);
+        User newUser = new User(username, email,verificationCode, password);
+        emailService.sendVerificationEmail(email, verificationCode);
     }
 
     public Map<String, String> login(AuthorizationUserCommand authorizationUserCommand) {
@@ -119,9 +121,9 @@ public class UserService {
 //    }
 
     @Transactional(readOnly = true)
-    protected void checkIfUserExists(String username) {
+    private void checkIfUsernameOrEmailExists(String username) {
         if (userRepository.findByUsername(username).isPresent()) {
-            throw new ThisUserAlreadyExists("This user already exists");
+            throw new ThisUsernameOrEmailAlreadyExists("This username or email already exists");
         }
     }
 }

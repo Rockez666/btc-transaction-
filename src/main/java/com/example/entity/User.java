@@ -22,9 +22,11 @@ public class User {
     private Long id;
     private String username;
     private String email;
+    private String verificationCode;
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private boolean isVerified;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Transaction> transactions = new ArrayList<>();
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -35,25 +37,26 @@ public class User {
 
     }
 
+    public User(String username, String email, String verificationCode, String password) {
+        this.username = username;
+        this.email = email;
+        this.verificationCode = verificationCode;
+        this.password = password;
+        this.role = Role.USER;
+        this.isVerified = false;
+        this.creationDate = LocalDate.now();
+    }
 
-   public User(String username, String email, String password) {
-    this.username = username;
-    this.email = email;
-    this.password = password;
-    this.role = Role.USER;
-    this.creationDate = LocalDate.now();
-}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
 
-@Override
-public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    User user = (User) o;
-    return Objects.equals(id, user.id);
-}
-
-@Override
-public int hashCode() {
-    return Objects.hashCode(id);
-}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

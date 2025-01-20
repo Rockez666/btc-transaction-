@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
   "username": "test",
-  "email": "testemail@gmail.com",
+  "email": "ghertalilian2006@gmail.com",
   "password": "testpassword"
 }
 
@@ -13,8 +13,8 @@ POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "username": "Admin",
-  "password": "passwordbroskiadmin"
+  "username": "test",
+  "password": "testpassword"
 }
 
 > {%
@@ -43,3 +43,10 @@ Authorization: Bearer {{jwtToken}}
 GET localhost:8080/adminPanel/hello
 Content-Type: application/json
 Authorization: Bearer {{jwtToken}}
+
+
+### Hello User
+GET localhost:8080/users/helloUser
+Content-Type: application/json
+Authorization: Bearer {{jwtToken}}
+

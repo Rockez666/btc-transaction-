@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class RegisterNewUserCommand {
     @NotBlank(message = "username is mandatory")
+    @Size(min = 2, max = 20, message = "username must be between 2 and 20 characters")
     private String username;
     @Email(message = "Email should be valid")
     @NotBlank(message = "email is mandatory")

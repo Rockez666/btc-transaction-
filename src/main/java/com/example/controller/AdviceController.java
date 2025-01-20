@@ -3,7 +3,6 @@ package com.example.controller;
 import com.example.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -66,8 +65,12 @@ public class AdviceController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
-    @ExceptionHandler(ThisUserAlreadyExists.class)
-    public ResponseEntity<String> handleThisUserAlreadyExists(ThisUserAlreadyExists e) {
+    @ExceptionHandler(ThisUsernameOrEmailAlreadyExists.class)
+    public ResponseEntity<String> handleThisUserAlreadyExists(ThisUsernameOrEmailAlreadyExists e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+    @ExceptionHandler(VerificationCodeException.class)
+    public ResponseEntity<String> handleVerificationCodeException(VerificationCodeException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
