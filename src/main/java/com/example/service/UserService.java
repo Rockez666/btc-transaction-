@@ -13,6 +13,7 @@ import com.example.mapper.UserMapper;
 import com.example.repository.UserRepository;
 import com.example.security.CustomUserDetails;
 import com.example.utill.JWTUtill;
+import com.example.utill.VerificationCodeGenerator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,6 +40,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JWTUtill jwtTokenUtil;
     private final EmailService emailService;
+    private final VerificationService verificationService;
 
 
     @PostConstruct
@@ -46,20 +48,23 @@ public class UserService {
     public void init() {
         User admin = new User("Admin","emailadmin@gmail.com","777", passwordEncoder.encode("passwordbroskiadmin"));
         admin.setRole(Role.ADMIN);
-        checkIfUsernameOrEmailExists(admin.getUsername());
+        checkIfUsernameOrEmailExists(admin.getUsername(), admin.getEmail());
         userRepository.save(admin);
     }
 
     @Transactional
     public void createUser(RegisterNewUserCommand createUserCommand) {
         String username = createUserCommand.getUsername();
-        checkIfUsernameOrEmailExists(username);
         String email = createUserCommand.getEmail();
+        checkIfUsernameOrEmailExists(username,email);
         String verificationCode = VerificationCodeGenerator.generateVerificationCode();
         String password = passwordEncoder.encode(createUserCommand.getPassword());
-        User newUser = new User(username, email,verificationCode, password);
+        User newUser = new User(username,email,verificationCode, password);
+        userRepository.save(newUser);
         emailService.sendVerificationEmail(email, verificationCode);
     }
+
+
 
     public Map<String, String> login(AuthorizationUserCommand authorizationUserCommand) {
         UsernamePasswordAuthenticationToken authInPutToken = new UsernamePasswordAuthenticationToken
@@ -120,9 +125,8 @@ public class UserService {
 //        userRepository.save(user);
 //    }
 
-    @Transactional(readOnly = true)
-    private void checkIfUsernameOrEmailExists(String username) {
-        if (userRepository.findByUsername(username).isPresent()) {
+    private void checkIfUsernameOrEmailExists(String username,String email) {
+        if (userRepository.findByUsername(username).isPresent() || userRepository.findByEmail(email).isPresent()) {
             throw new ThisUsernameOrEmailAlreadyExists("This username or email already exists");
         }
     }

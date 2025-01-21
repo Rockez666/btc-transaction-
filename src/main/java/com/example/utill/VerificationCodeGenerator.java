@@ -1,9 +1,8 @@
-package com.example.service;
+package com.example.utill;
 
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-@Service
 public class VerificationCodeGenerator {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final int CODE_LENGTH = 6;

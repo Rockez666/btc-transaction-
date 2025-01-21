@@ -52,11 +52,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.user != null;
-    }
-
-    public User getPerson() {
-        return this.user;
+        return this.user.isVerified();
     }
 }
 
