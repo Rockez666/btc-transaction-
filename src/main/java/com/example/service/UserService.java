@@ -117,13 +117,7 @@ public class UserService {
     }
 
 
-//
-//    @Transactional
-//    public void updateUser(UpdateUserPasswordCommand updateUserCommand) {
-//        User authUser = getCurrentUser();
-//
-//        userRepository.save(user);
-//    }
+
 
     private void checkIfUsernameOrEmailExists(String username,String email) {
         if (userRepository.findByUsername(username).isPresent() || userRepository.findByEmail(email).isPresent()) {

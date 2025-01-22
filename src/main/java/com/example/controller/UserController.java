@@ -28,9 +28,6 @@ public class UserController {
         return ResponseEntity.ok().body("Verification email sent successfully!");
     }
 
-
-
-// TODO: сдлеать проверку, изменить страницу с кодом в email через таймлиф,
     @PostMapping("/verifyEmail")
     public ResponseEntity<String> verifyEmail(@RequestBody VerifyEmailCommand command) {
         verificationService.verifyCode(command);

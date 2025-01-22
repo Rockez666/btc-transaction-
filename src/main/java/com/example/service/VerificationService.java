@@ -18,7 +18,7 @@ public class VerificationService {
     @Transactional
     public void verifyCode(VerifyEmailCommand command) {
         User user = userRepository.findByEmail(command.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found"));
-        if (!user.getVerificationCode().equals(command.getCode())) {
+        if (!user.getVerificationCode().equals(command.getVerificationCode())) {
             throw new VerificationCodeException("This code is not actual..");
         } else {
             user.setVerificationCode(null);

@@ -29,7 +29,7 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/users/registration","/users/login","/users/sendCode").permitAll()
+                .requestMatchers("/users/registration","/users/login","/users/verifyEmail").permitAll()
                 .requestMatchers("/users/helloUser").hasRole("USER")
                 .requestMatchers("/transactions/createTransaction").hasRole("USER")
                 .requestMatchers("/adminPanel/hello").hasRole("ADMIN")
