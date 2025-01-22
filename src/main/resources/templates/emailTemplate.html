@@ -2,19 +2,69 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Verification</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 16px; }
-        .code { color: #4CAF50; font-weight: bold; font-size: 24px; }
-        .container { padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #ddd; max-width: 600px; margin: 0 auto; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5faff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            max-width: 620px;
+            margin: 40px auto;
+            padding: 50px;
+            text-align: center;
+        }
+        h2 {
+            color: #2d4f8b;
+            font-size: 30px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        p {
+            color: #444;
+            font-size: 17px;
+            margin-bottom: 22px;
+            line-height: 1.7;
+        }
+        .code {
+            background-color: #2d4f8b;
+            color: #ffffff;
+            font-size: 34px;
+            font-weight: 700;
+            padding: 18px;
+            border-radius: 10px;
+            letter-spacing: 4px;
+        }
+        .footer {
+            margin-top: 35px;
+            font-size: 15px;
+            color: #777;
+        }
+        .footer a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2>Hello!</h2>
-    <p>We received a request to verify your email address.</p>
-    <p>Your verification code is: <span class="code" th:text="${verificationCode}"></span></p>
-    <p>If you didn't request this, please ignore this email.</p>
+    <h2>Hi!</h2>
+    <p>We have received a request to confirm your email address..</p>
+    <p>Your confirmation code: <span class="code" th:text="${verificationCode}"></span></p>
+    <p>If you did not make this request, simply ignore this email..</p>
+    <div class="footer">
+        <p>If you have any questions, <a href="mailto:support@example.com">write to us</a>.</p>
+    </div>
 </div>
 </body>
 </html>
