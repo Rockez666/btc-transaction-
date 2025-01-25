@@ -19,10 +19,8 @@ public class JWTUtill {
     @Value("${jwt_secret}")
     private String secret;
 
-    public String generateToken(String username, Role role) {
+    public String generateLoginToken(String username, Role role) {
         Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
-
-
         return JWT.create()
                 .withSubject("User details")
                 .withClaim("username", username)
@@ -33,23 +31,29 @@ public class JWTUtill {
                 .sign(Algorithm.HMAC256(secret));
     }
 
+    public String generateEmailVerifyToken(String email) {
+        Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
+        return JWT.create()
+                .withSubject("Email verification")
+                .withClaim("email", email)
+                .withIssuedAt(new Date())
+                .withIssuer("ROCKEZ")
+                .withExpiresAt(expirationDate)
+                .sign(Algorithm.HMAC256(secret));
+    }
+
     public Map<String,String> validateTokenAndRetrieveClaim(String token) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
-                .withSubject("User details")
                 .withIssuer("ROCKEZ")
                 .build();
 
         DecodedJWT jwt = verifier.verify(token);
 
-        String username = jwt.getClaim("username").asString();
-        String role = jwt.getClaim("role").asString();
-
-
         Map<String, String> claims = new HashMap<>();
-        claims.put("username",username );
-        claims.put("role", role);
-
+        jwt.getClaims().forEach((key, value) -> claims.put(key, value.asString()));
 
         return  claims;
     }
+
+
 }

@@ -22,7 +22,6 @@ public class User {
     private Long id;
     private String username;
     private String email;
-    private String verificationCode;
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -37,10 +36,9 @@ public class User {
 
     }
 
-    public User(String username, String email, String verificationCode, String password) {
+    public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
-        this.verificationCode = verificationCode;
         this.password = password;
         this.role = Role.USER;
         this.verified = false;

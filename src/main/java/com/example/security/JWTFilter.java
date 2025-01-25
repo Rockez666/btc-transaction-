@@ -33,6 +33,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             if (jwt.isBlank()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT Token in Bearer header");
+                return;
             } else {
                 try {
 
@@ -44,7 +45,7 @@ public class JWTFilter extends OncePerRequestFilter {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
-                                    userDetails.getPassword(),
+                                    null,
                                     userDetails.getAuthorities()
                                     );
 
@@ -52,7 +53,7 @@ public class JWTFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
                 } catch (JWTVerificationException e) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT Token");
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid or expired JWT Token");
                 }
             }
 

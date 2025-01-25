@@ -1,9 +1,7 @@
 package com.example.controller;
 
-import com.example.command.UpdateUserPasswordCommand;
 import com.example.dto.UserDto;
 import com.example.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +22,6 @@ public class AdminController {
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUser() {
         return ResponseEntity.ok().body(userService.getAllUsers());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
-        UserDto userDto = userService.getUserDtoById(id);
-        return ResponseEntity.ok().body(userDto);
     }
 
     @DeleteMapping("/{id}")

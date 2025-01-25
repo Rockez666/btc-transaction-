@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.utill.JWTUtill;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -10,25 +11,38 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
-
+    private final JWTUtill jwtUtill;
 
     @Async
-    public void sendVerificationEmail(String email, String verificationCode) {
+    public void sendVerificationEmail(String email ) {
+        String token = jwtUtill.generateEmailVerifyToken(email);
+
+
+
+        String verificationLink = "http://localhost:8080/auth/verifyEmail?token=" +
+                URLEncoder.encode(token, StandardCharsets.UTF_8);
+
         Context context = new Context();
-        context.setVariable("verificationCode", verificationCode);
+        context.setVariable("verificationLink", verificationLink);
+        context.setVariable("email", email);
 
         try {
             String htmlContent = templateEngine.process("emailTemplate", context);
+
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+
             mimeMessageHelper.setTo(email);
-            mimeMessageHelper.setSubject("Verification Code");
+            mimeMessageHelper.setSubject("Verification Link");
             mimeMessageHelper.setText(htmlContent, true);
 
             mailSender.send(mimeMessage);
@@ -38,4 +52,3 @@ public class EmailService {
         }
     }
 }
-
