@@ -28,7 +28,7 @@ public class EmailService {
 
 
 
-        String verificationLink = "http://localhost:8080/auth/verifyEmail?token=" +
+        String verificationLink = "http://localhost:5173/verification?token=" +
                 URLEncoder.encode(token, StandardCharsets.UTF_8);
 
         Context context = new Context();
