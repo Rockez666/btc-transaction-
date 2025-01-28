@@ -8,8 +8,9 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
+import java.util.Random;
+import java.util.UUID;
 
 @Entity
 @Table(name = "transactions")
@@ -20,6 +21,7 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transaction_seq")
     @SequenceGenerator(name = "transaction_seq", sequenceName = "transaction_seq", allocationSize = 1)
     private Long id;
+    private String transactionId;
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
     @Enumerated(EnumType.STRING)
@@ -33,9 +35,10 @@ public class Transaction {
 
     public Transaction() {
     }
-   
+
     public Transaction(User user, TransactionType transactionType, Cryptocurrency cryptocurrency, BigDecimal price,
                        BigDecimal quantityInTransaction, BigDecimal equivalentInUSD) {
+        this.transactionId = UUID.randomUUID().toString();
         this.user = user;
         this.transactionType = transactionType;
         this.cryptocurrency = cryptocurrency;
@@ -45,9 +48,16 @@ public class Transaction {
         this.creationDate = LocalDate.now();
     }
 
+    public static String generateTransactionUUID() {
+        Random random = new Random();
+        int id = 10000 + random.nextInt(90000); // генерируем случайное число от 10000 до 99999
+        return "#" + id;
+    }
+
     public BigDecimal getEquivalentInTransaction() {
         return this.quantityInTransaction.multiply(this.price);
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

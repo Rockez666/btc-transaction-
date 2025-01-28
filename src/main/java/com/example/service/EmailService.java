@@ -13,6 +13,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -22,14 +23,17 @@ public class EmailService {
     private final SpringTemplateEngine templateEngine;
     private final JWTUtill jwtUtill;
 
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int CODE_LENGTH = 6;
+    private static final SecureRandom random = new SecureRandom();
+
+
     @Async
-    public void sendVerificationEmail(String email ) {
-        String token = jwtUtill.generateEmailVerifyToken(email);
+    public void sendVerificationEmail(String email,String verificationCode) {
 
-
-
-        String verificationLink = "http://localhost:5173/verification?token=" +
-                URLEncoder.encode(token, StandardCharsets.UTF_8);
+        String verificationLink = "http://localhost:5173/verification?" +
+                "email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) +
+                "&code=" + URLEncoder.encode(verificationCode, StandardCharsets.UTF_8);
 
         Context context = new Context();
         context.setVariable("verificationLink", verificationLink);
@@ -51,4 +55,12 @@ public class EmailService {
             e.printStackTrace();
         }
     }
+
+   public String generateCode() {
+       StringBuilder code = new StringBuilder(CODE_LENGTH);
+        for (int i = 0; i < CODE_LENGTH; i++) {
+          int randomIndex = random.nextInt(CHARACTERS.length());
+            code.append(CHARACTERS.charAt(randomIndex));
+       }
+        return code.toString();}
 }

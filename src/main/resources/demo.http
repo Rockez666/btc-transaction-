@@ -3,24 +3,25 @@ POST http://localhost:8080/auth/registration
 Content-Type: application/json
 
 {
-  "username": "test",
+  "username": "ROCKEZ666",
   "email": "ghertalilian2006@gmail.com",
-  "password": "testpassword"
+  "password": "Lilian4ik123123"
 }
 
 ### User Login
-POST http://localhost:8080/users/login
+POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "username": "test",
-  "password": "testpassword"
+  "username": "ROCKEZ666",
+  "password": "Lilian4ik123123"
 }
 
 > {%
     if (response && response.body) {
-        const responseBody = response.body;
-        client.global.set("jwtToken", responseBody["jwt-token"]);
+        const jwtToken = response.body;
+        client.global.set("jwtToken", jwtToken);
+        console.log("JWT Token successfully set:", jwtToken);
     } else {
         console.error("Response body is undefined or empty.");
     }
@@ -34,9 +35,14 @@ Authorization: Bearer {{jwtToken}}
 {
   "transactionType": "buy",
   "cryptocurrency": "Bitcoin",
-  "price": 40000.50,
-  "quantity": 0.5
+  "price": 6,
+  "quantity": 255
 }
+
+### Get Current User dto
+GET http://localhost:8080/users/currentUserDto
+Content-Type: application/json
+Authorization: Bearer {{jwtToken}}
 
 
 ### Hello Admin

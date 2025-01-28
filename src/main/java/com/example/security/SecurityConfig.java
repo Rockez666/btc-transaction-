@@ -31,11 +31,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 // AUTH controller
                 .requestMatchers("/auth/**").permitAll()
-                //
-                .requestMatchers("/users/verifyEmail","/**").permitAll()
-                .requestMatchers("/users/helloUser").hasRole("USER")
+                .requestMatchers("/auth/verifyEmail").permitAll()
+                // user controller
+                .requestMatchers("/users/**").hasRole("USER")
+                .requestMatchers("/adminPanel/**").hasRole("ADMIN")
                 .requestMatchers("/transactions/createTransaction").hasRole("USER")
-                .requestMatchers("/adminPanel/hello").hasRole("ADMIN")
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

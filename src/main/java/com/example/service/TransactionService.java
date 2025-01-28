@@ -1,10 +1,13 @@
 package com.example.service;
 
 import com.example.command.CreateTransactionCommand;
-import com.example.entity.*;
+import com.example.entity.TokenStatistics;
+import com.example.entity.Transaction;
+import com.example.entity.User;
 import com.example.enums.Cryptocurrency;
 import com.example.enums.TransactionType;
 import com.example.exception.NotEnoughQuantityToSellException;
+import com.example.exception.ThisTransactionDoesNotExistException;
 import com.example.exception.TransactionIsNullException;
 import com.example.repository.TransactionRepository;
 import com.example.repository.UserRepository;
@@ -92,6 +95,15 @@ public class TransactionService {
             }
         }
 
+    }
+
+    @Transactional
+    public void deleteTransaction(String transactionId) {
+        User currentUser = userService.getCurrentUser();
+        Transaction transactionToDelete = transactionRepository.findByTransactionId(transactionId).orElseThrow(() -> new ThisTransactionDoesNotExistException("This transaction does not exists"));
+
+        currentUser.getTransactions().remove(transactionToDelete);
+        transactionRepository.delete(transactionToDelete);
     }
 }
 

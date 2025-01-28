@@ -25,6 +25,7 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private String verificationCode;
     private boolean verified;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Transaction> transactions = new ArrayList<>();
@@ -36,11 +37,12 @@ public class User {
 
     }
 
-    public User(String username, String email, String password) {
+    public User(String username, String email, String password,String verificationCode) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = Role.USER;
+        this.verificationCode = verificationCode;
         this.verified = false;
         this.creationDate = LocalDate.now();
     }

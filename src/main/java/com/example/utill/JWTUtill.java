@@ -31,17 +31,6 @@ public class JWTUtill {
                 .sign(Algorithm.HMAC256(secret));
     }
 
-    public String generateEmailVerifyToken(String email) {
-        Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
-        return JWT.create()
-                .withSubject("Email verification")
-                .withClaim("email", email)
-                .withIssuedAt(new Date())
-                .withIssuer("ROCKEZ")
-                .withExpiresAt(expirationDate)
-                .sign(Algorithm.HMAC256(secret));
-    }
-
     public Map<String,String> validateTokenAndRetrieveClaim(String token) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
                 .withIssuer("ROCKEZ")

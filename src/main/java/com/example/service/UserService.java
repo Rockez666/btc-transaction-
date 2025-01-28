@@ -25,11 +25,6 @@ public class UserService {
     private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
-    public List<UserDto> getAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::toDto).collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
     public UserDto getCurrentUserDto() {
         User currentUser = getCurrentUser();
         return userMapper.toDto(currentUser);
@@ -47,10 +42,7 @@ public class UserService {
     }
 
 
-    @Transactional
-    public void deleteUser(Long userId) {
-        userRepository.deleteById(userId);
-    }
+
 
 }
 

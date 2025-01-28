@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.dto.UserDto;
+import com.example.service.AdminService;
 import com.example.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +11,10 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin("*")
 @RequestMapping("/adminPanel")
 public class AdminController {
-    private final UserService userService;
+    private final AdminService adminService;
 
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
@@ -21,12 +23,12 @@ public class AdminController {
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUser() {
-        return ResponseEntity.ok().body(userService.getAllUsers());
+        return ResponseEntity.ok().body(adminService.getAllUsers());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserByID(@PathVariable Long id) {
-        userService.deleteUser(id);
+        adminService.deleteUser(id);
         return ResponseEntity.ok().body("User deleted");
     }
 

@@ -32,7 +32,7 @@ public class AuthService {
     @PostConstruct
     @Transactional
     public void init() {
-        User admin = new User("Admin", "emailadmin@gmail.com", passwordEncoder.encode("passwordbroskiadmin"));
+        User admin = new User("Admin", "emailadmin@gmail.com", passwordEncoder.encode("passwordbroskiadmin"),"555");
         admin.setRole(Role.ADMIN);
         checkIfUsernameOrEmailExists(admin.getUsername(), admin.getEmail());
         userRepository.save(admin);
@@ -44,10 +44,11 @@ public class AuthService {
         String username = createUserCommand.getUsername();
         String email = createUserCommand.getEmail();
         checkIfUsernameOrEmailExists(username, email);
+        String verificationCode = emailService.generateCode();
         String password = passwordEncoder.encode(createUserCommand.getPassword());
-        User newUser = new User(username, email, password);
+        User newUser = new User(username, email, password,verificationCode);
         userRepository.save(newUser);
-        emailService.sendVerificationEmail(email);
+        emailService.sendVerificationEmail(email,verificationCode);
     }
 
     public String login(AuthorizationUserCommand authorizationUserCommand) {
@@ -59,7 +60,7 @@ public class AuthService {
         } catch (BadCredentialsException e) {
             throw new InvalidPasswordException("Invalid credentials");
         }
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
+        UserDetails userDetails =  customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
         Role role = userDetails.getAuthorities()
                 .stream()
                 .findFirst()

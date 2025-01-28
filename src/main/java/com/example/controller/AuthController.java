@@ -35,12 +35,10 @@ public class AuthController {
     }
 
     @GetMapping("/verifyEmail")
-    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
+    public ResponseEntity<String> verifyEmail(@RequestParam("email") String email, @RequestParam("code") String code) {
         try {
-            verificationService.verifyEmailToken(token);
+            verificationService.verifyEmail(email,code);
             return ResponseEntity.ok().body("Email verified successfully");
-        } catch (JWTVerificationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
         } catch (UserNotFoundException | ThatUserIsVerifiedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
