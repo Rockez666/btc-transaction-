@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.command.UpdateTransactionCommand;
 import com.example.dto.UserDto;
 import com.example.service.AdminService;
 import com.example.service.UserService;
@@ -29,14 +30,12 @@ public class AdminController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserByID(@PathVariable Long id) {
         adminService.deleteUser(id);
-        return ResponseEntity.ok().body("User deleted");
+        return ResponseEntity.ok().body("User successfully deleted");
     }
 
-//    @PutMapping()
-//    public ResponseEntity<String> updateUserData(@Valid @RequestBody UpdateUserPasswordCommand updateCommand) {
-//        userService.updateUser(updateCommand);
-//        return ResponseEntity.ok().body("User updated");
-//    }
-
-
+    @PostMapping("/updateTransaction")
+    public ResponseEntity<String> updateTransaction(@RequestBody UpdateTransactionCommand command) {
+        adminService.updateTransaction(command);
+        return ResponseEntity.ok().body("Transaction successfully updated");
+    }
 }

@@ -18,9 +18,6 @@ import java.util.UUID;
 @Setter
 public class Transaction {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transaction_seq")
-    @SequenceGenerator(name = "transaction_seq", sequenceName = "transaction_seq", allocationSize = 1)
-    private Long id;
     private String transactionId;
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
@@ -48,12 +45,6 @@ public class Transaction {
         this.creationDate = LocalDate.now();
     }
 
-    public static String generateTransactionUUID() {
-        Random random = new Random();
-        int id = 10000 + random.nextInt(90000); // генерируем случайное число от 10000 до 99999
-        return "#" + id;
-    }
-
     public BigDecimal getEquivalentInTransaction() {
         return this.quantityInTransaction.multiply(this.price);
     }
@@ -63,12 +54,12 @@ public class Transaction {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Transaction order = (Transaction) o;
-        return Objects.equals(id, order.id);
+        return Objects.equals(transactionId, order.transactionId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(transactionId);
     }
 }
 

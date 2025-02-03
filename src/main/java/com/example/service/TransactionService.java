@@ -94,16 +94,16 @@ public class TransactionService {
                 throw new NotEnoughQuantityToSellException("Not enough quantity to sell");
             }
         }
-
     }
 
     @Transactional
     public void deleteTransaction(String transactionId) {
         User currentUser = userService.getCurrentUser();
         Transaction transactionToDelete = transactionRepository.findByTransactionId(transactionId).orElseThrow(() -> new ThisTransactionDoesNotExistException("This transaction does not exists"));
-
-        currentUser.getTransactions().remove(transactionToDelete);
-        transactionRepository.delete(transactionToDelete);
+        if (currentUser.getTransactions().contains(transactionToDelete)) {
+            currentUser.getTransactions().remove(transactionToDelete);
+            transactionRepository.delete(transactionToDelete);
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.command.DeleteTransactionCommand;
 import com.example.dto.UserDto;
 import com.example.service.TransactionService;
 import com.example.service.UserService;
@@ -24,11 +25,5 @@ public class UserController {
     @GetMapping("/helloUser")
     public ResponseEntity<String> helloUser() {
         return ResponseEntity.ok("hello world");
-    }
-
-    @DeleteMapping("/deleteTransaction")
-    public ResponseEntity<String> deleteTransaction(@RequestBody String transactionId) {
-        transactionService.deleteTransaction(transactionId);
-        return ResponseEntity.ok("transaction deleted");
     }
 }

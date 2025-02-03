@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 
 @Entity
@@ -17,9 +18,7 @@ import java.util.Objects;
 @Setter
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
-    @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 1)
-    private Long id;
+    private String id;
     private String username;
     private String email;
     private String password;
@@ -38,6 +37,7 @@ public class User {
     }
 
     public User(String username, String email, String password,String verificationCode) {
+        this.id = UUID.randomUUID().toString();
         this.username = username;
         this.email = email;
         this.password = password;

@@ -56,6 +56,34 @@ public class EmailService {
         }
     }
 
+    public void sendVerificationLinkToResetPassword(String email,String verificationCode) {
+        // TODO: need to change the link
+        String linkToResetPassword = "http://localhost:5173/verification?" +
+                "email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) +
+                "&code=" + URLEncoder.encode(verificationCode, StandardCharsets.UTF_8);
+
+        Context context = new Context();
+        context.setVariable("linkToResetPassword", linkToResetPassword);
+        context.setVariable("email", email);
+
+        try {
+            String htmlContent = templateEngine.process("passwordReset", context);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+
+            mimeMessageHelper.setTo(email);
+            mimeMessageHelper.setSubject("Reset Password");
+            mimeMessageHelper.setText(htmlContent, true);
+
+            mailSender.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
    public String generateCode() {
        StringBuilder code = new StringBuilder(CODE_LENGTH);
         for (int i = 0; i < CODE_LENGTH; i++) {

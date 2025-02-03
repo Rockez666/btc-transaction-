@@ -21,6 +21,12 @@ public class TransactionController {
         return ResponseEntity.ok("Transaction Created");
     }
 
+    @DeleteMapping("/deleteTransaction/{transactionId}")
+    public ResponseEntity<String> deleteTransaction(@PathVariable String transactionId) {
+        transactionService.deleteTransaction(transactionId);
+        return ResponseEntity.ok("transaction deleted");
+    }
+
 }
 
 

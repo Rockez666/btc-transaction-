@@ -33,9 +33,11 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/auth/verifyEmail").permitAll()
                 // user controller
-                .requestMatchers("/users/**").hasRole("USER")
-                .requestMatchers("/adminPanel/**").hasRole("ADMIN")
-                .requestMatchers("/transactions/createTransaction").hasRole("USER")
+                .requestMatchers("/users/**").hasAuthority("USER")
+                // admin controller
+                .requestMatchers("/adminPanel/**").hasAuthority("ADMIN")
+                // transaction controller for USERS
+                .requestMatchers("/transactions/**").hasAuthority("USER")
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
@@ -43,10 +45,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public GrantedAuthorityDefaults grantedAuthorityDefaults() {
-        return new GrantedAuthorityDefaults("");
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {

@@ -71,10 +71,23 @@ public class AuthService {
         return jwtTokenUtil.generateLoginToken(authorizationUserCommand.getUsername(), role);
     }
 
+    public void sendLinkToResetPassword(String email) {
+        User userToReset = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+        userToReset.setVerificationCode(null);
+        String verificationCode = emailService.generateCode();
+        userToReset.setVerificationCode(verificationCode);
+        emailService.sendVerificationLinkToResetPassword(email,verificationCode);
+    }
+
+    public void passwordReset(String email,String newPassword) {
+
+    }
+
 
     private void checkIfUsernameOrEmailExists(String username, String email) {
         if (userRepository.findByUsername(username).isPresent() || userRepository.findByEmail(email).isPresent()) {
             throw new ThisUsernameOrEmailAlreadyExists("This username or email already exists");
         }
     }
+
 }

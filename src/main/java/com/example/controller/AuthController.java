@@ -1,12 +1,11 @@
 package com.example.controller;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.command.AuthorizationUserCommand;
 import com.example.command.RegisterNewUserCommand;
 import com.example.exception.ThatUserIsVerifiedException;
 import com.example.exception.UserNotFoundException;
 import com.example.service.AuthService;
-import com.example.service.VerificationEmailService;
+import com.example.service.VerificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final VerificationEmailService verificationService;
+    private final VerificationService verificationService;
 
     @PostMapping("/registration")
     public ResponseEntity<String> registration(@Valid @RequestBody RegisterNewUserCommand registerCommand) {

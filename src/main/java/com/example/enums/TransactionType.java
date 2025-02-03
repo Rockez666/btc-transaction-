@@ -16,9 +16,9 @@ public enum TransactionType {
         this.transaction = transaction;
     }
 
-    public static TransactionType getTransactionType(String transaction) {
+    public static TransactionType getTransactionType(String transactionType) {
         return Arrays.stream(TransactionType.values())
-                .filter(value -> value.getTransaction().equalsIgnoreCase(transaction))
+                .filter(value -> value.getTransaction().equalsIgnoreCase(transactionType))
                 .findFirst()
                 .orElseThrow(() -> new TransactionTypeNotFoundException("Transaction type not found") );
     }
