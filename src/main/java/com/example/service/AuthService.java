@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.command.AuthorizationUserCommand;
 import com.example.command.RegisterNewUserCommand;
+import com.example.command.ResetPasswordCommand;
 import com.example.entity.User;
 import com.example.enums.Role;
 import com.example.exception.*;
@@ -32,8 +33,9 @@ public class AuthService {
     @PostConstruct
     @Transactional
     public void init() {
-        User admin = new User("Admin", "emailadmin@gmail.com", passwordEncoder.encode("passwordbroskiadmin"),"555");
+        User admin = new User("Admin", "emailadmin@gmail.com", passwordEncoder.encode("passwordbroskiadmin"), "555");
         admin.setRole(Role.ADMIN);
+        admin.setVerified(true);
         checkIfUsernameOrEmailExists(admin.getUsername(), admin.getEmail());
         userRepository.save(admin);
     }
@@ -46,9 +48,9 @@ public class AuthService {
         checkIfUsernameOrEmailExists(username, email);
         String verificationCode = emailService.generateCode();
         String password = passwordEncoder.encode(createUserCommand.getPassword());
-        User newUser = new User(username, email, password,verificationCode);
+        User newUser = new User(username, email, password, verificationCode);
         userRepository.save(newUser);
-        emailService.sendVerificationEmail(email,verificationCode);
+        emailService.sendVerificationEmail(email, verificationCode);
     }
 
     public String login(AuthorizationUserCommand authorizationUserCommand) {
@@ -60,7 +62,7 @@ public class AuthService {
         } catch (BadCredentialsException e) {
             throw new InvalidPasswordException("Invalid credentials");
         }
-        UserDetails userDetails =  customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
         Role role = userDetails.getAuthorities()
                 .stream()
                 .findFirst()
@@ -70,19 +72,6 @@ public class AuthService {
 
         return jwtTokenUtil.generateLoginToken(authorizationUserCommand.getUsername(), role);
     }
-
-    public void sendLinkToResetPassword(String email) {
-        User userToReset = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
-        userToReset.setVerificationCode(null);
-        String verificationCode = emailService.generateCode();
-        userToReset.setVerificationCode(verificationCode);
-        emailService.sendVerificationLinkToResetPassword(email,verificationCode);
-    }
-
-    public void passwordReset(String email,String newPassword) {
-
-    }
-
 
     private void checkIfUsernameOrEmailExists(String username, String email) {
         if (userRepository.findByUsername(username).isPresent() || userRepository.findByEmail(email).isPresent()) {

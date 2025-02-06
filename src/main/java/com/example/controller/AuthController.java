@@ -1,10 +1,13 @@
 package com.example.controller;
 
 import com.example.command.AuthorizationUserCommand;
+import com.example.command.EmailRequest;
 import com.example.command.RegisterNewUserCommand;
+import com.example.command.ResetPasswordCommand;
 import com.example.exception.ThatUserIsVerifiedException;
 import com.example.exception.UserNotFoundException;
 import com.example.service.AuthService;
+import com.example.service.PasswordResetService;
 import com.example.service.VerificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final VerificationService verificationService;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/registration")
     public ResponseEntity<String> registration(@Valid @RequestBody RegisterNewUserCommand registerCommand) {
@@ -33,7 +37,7 @@ public class AuthController {
         return ResponseEntity.ok().body(token);
     }
 
-    @GetMapping("/verifyEmail")
+    @GetMapping("/verifyEmailAndCode")
     public ResponseEntity<String> verifyEmail(@RequestParam("email") String email, @RequestParam("code") String code) {
         try {
             verificationService.verifyEmail(email,code);
@@ -41,6 +45,27 @@ public class AuthController {
         } catch (UserNotFoundException | ThatUserIsVerifiedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    // sending link after user enter the button-form
+    @PostMapping("/sendLinkToResetPassword")
+    public ResponseEntity<String> sendLinkToRecoverPassword(@RequestBody EmailRequest request) {
+        passwordResetService.sendLinkToResetPassword(request.getEmail()); // ok.
+        return ResponseEntity.ok().body("Reset link sent successfully");
+    }
+
+    // URL logic
+    @GetMapping("/verifyPasswordAndCode")
+    public ResponseEntity<String> verifyResetPasswordCode(@RequestParam("email") String email, @RequestParam("code") String code) {
+   verificationService.verifyResetPassword(email,code);
+        return ResponseEntity.ok().build();
+    }
+
+    // THAT'S FORM
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> passwordReset(@RequestBody ResetPasswordCommand resetPasswordCommand) {
+        passwordResetService.resetPassword(resetPasswordCommand);
+        return ResponseEntity.ok().build();
     }
 
 }

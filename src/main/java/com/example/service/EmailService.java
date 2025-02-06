@@ -13,7 +13,10 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
@@ -23,13 +26,12 @@ public class EmailService {
     private final SpringTemplateEngine templateEngine;
     private final JWTUtill jwtUtill;
 
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    private static final int CODE_LENGTH = 6;
+    private static final int TOKEN_LENGTH = 32;
     private static final SecureRandom random = new SecureRandom();
 
 
     @Async
-    public void sendVerificationEmail(String email,String verificationCode) {
+    public void sendVerificationEmail(String email, String verificationCode) {
 
         String verificationLink = "http://localhost:5173/verification?" +
                 "email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) +
@@ -56,10 +58,10 @@ public class EmailService {
         }
     }
 
-    public void sendVerificationLinkToResetPassword(String email,String verificationCode) {
+    public void sendLinkToResetPassword(String email, String verificationCode) {
         // TODO: need to change the link
-        String linkToResetPassword = "http://localhost:5173/verification?" +
-                "email=" + URLEncoder.encode(email, StandardCharsets.UTF_8) +
+        String linkToResetPassword = "http://localhost:5173/register?email=" +
+                URLEncoder.encode(email, StandardCharsets.UTF_8) +
                 "&code=" + URLEncoder.encode(verificationCode, StandardCharsets.UTF_8);
 
         Context context = new Context();
@@ -81,14 +83,45 @@ public class EmailService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-
     }
 
-   public String generateCode() {
-       StringBuilder code = new StringBuilder(CODE_LENGTH);
-        for (int i = 0; i < CODE_LENGTH; i++) {
-          int randomIndex = random.nextInt(CHARACTERS.length());
-            code.append(CHARACTERS.charAt(randomIndex));
-       }
-        return code.toString();}
+    public void sendSuccessMessageAboutChangePassword(String email) {
+        Context context = new Context();
+        context.setVariable("email", email);
+
+        try {
+            String htmlContent = templateEngine.process("passwordResetSuccessMessage", context);
+
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+
+            mimeMessageHelper.setTo(email);
+            mimeMessageHelper.setSubject("Success Reset Password");
+            mimeMessageHelper.setText(htmlContent, true);
+
+            mailSender.send(mimeMessage);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String generateCode() {
+        byte[] randomBytes = new byte[TOKEN_LENGTH];
+        random.nextBytes(randomBytes);
+        String token = Base64.getEncoder().encodeToString(randomBytes);
+        return hashToken(token);
+    }
+
+    private String hashToken(String token) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashedBytes = digest.digest(token.getBytes());
+            return Base64.getEncoder().encodeToString(hashedBytes);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Code hashing error", e);
+        }
+
+
+    }
 }
