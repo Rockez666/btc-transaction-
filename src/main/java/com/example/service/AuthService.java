@@ -1,18 +1,18 @@
 package com.example.service;
 
 import com.example.command.AuthorizationUserCommand;
-import com.example.command.EmailRequest;
 import com.example.command.RegisterNewUserCommand;
-import com.example.command.ResetPasswordCommand;
 import com.example.entity.User;
 import com.example.enums.Role;
 import com.example.exception.*;
 import com.example.repository.UserRepository;
+import com.example.security.CustomUserDetails;
 import com.example.utill.JWTUtill;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -56,25 +56,31 @@ public class AuthService {
 
     public String login(AuthorizationUserCommand authorizationUserCommand) {
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
-        if (!userDetails.isEnabled()) {
-            throw new EmailIsNotVerified("Email is not verified");
+        try {
+            if (!userDetails.isEnabled()) {
+                throw new EmailIsNotVerified("Email is not verified");
+            }
+        } catch (EmailIsNotVerified e) {
+            throw new EmailIsNotVerified("Email Is Not Verified");
         }
-        UsernamePasswordAuthenticationToken authInPutToken = new UsernamePasswordAuthenticationToken
-                (authorizationUserCommand.getUsername(), authorizationUserCommand.getPassword());
 
         try {
+            UsernamePasswordAuthenticationToken authInPutToken = new UsernamePasswordAuthenticationToken
+                    (authorizationUserCommand.getUsername(), authorizationUserCommand.getPassword());
+
             authenticationManager.authenticate(authInPutToken);
+
+            Role role = userDetails.getAuthorities()
+                    .stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .map(Role::valueOf)
+                    .orElseThrow(() -> new RoleNotFoundException("Role not found exception"));
+            return jwtTokenUtil.generateLoginToken(authorizationUserCommand.getUsername(), role);
+
         } catch (BadCredentialsException e) {
             throw new InvalidPasswordException("Invalid credentials");
         }
-        Role role = userDetails.getAuthorities()
-                .stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .map(Role::valueOf)
-                .orElseThrow(() -> new RoleNotFoundException("Role not found exception"));
-
-        return jwtTokenUtil.generateLoginToken(authorizationUserCommand.getUsername(), role);
     }
 
     public void sendVerificationCode(String email) {
