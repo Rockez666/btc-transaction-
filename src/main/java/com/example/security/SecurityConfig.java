@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests()
                 // AUTH controller
+                .requestMatchers("/auth/sendLinkToResetPassword").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/auth/verifyEmail").permitAll()
                 // user controller

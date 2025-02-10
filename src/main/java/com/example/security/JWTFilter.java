@@ -36,7 +36,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 return;
             } else {
                 try {
-
                     Map<String, String> claims = jwtUtill.validateTokenAndRetrieveClaim(jwt);
                     String username = claims.get("username");
 
@@ -47,7 +46,7 @@ public class JWTFilter extends OncePerRequestFilter {
                                     userDetails,
                                     null,
                                     userDetails.getAuthorities()
-                                    );
+                            );
 
                     if (SecurityContextHolder.getContext().getAuthentication() == null) {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
@@ -56,8 +55,10 @@ public class JWTFilter extends OncePerRequestFilter {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid or expired JWT Token");
                 }
             }
-
         }
+
+        // Если токен отсутствует или не действителен, но запрос не `/auth/sendLinkToResetPassword`,
+        // то можно либо пропустить запрос без аутентификации, либо отправить ошибку
         filterChain.doFilter(request, response);
     }
 }

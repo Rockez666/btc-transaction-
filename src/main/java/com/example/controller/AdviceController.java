@@ -20,12 +20,12 @@ public class AdviceController {
 
     @ExceptionHandler(TransactionTypeNotFoundException.class)
     public ResponseEntity<String> handleTransactionTypeNotFound(TransactionTypeNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(CryptocurrencyNotFoundException.class)
     public ResponseEntity<String> handleCryptocurrencyNotFound(CryptocurrencyNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -48,7 +48,7 @@ public class AdviceController {
 
     @ExceptionHandler(TransactionIsNullException.class)
     public ResponseEntity<String> handleTransactionIsNullException(TransactionIsNullException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(AmountMustBeGreaterThanZeroException.class)
@@ -62,11 +62,19 @@ public class AdviceController {
 
     @ExceptionHandler(RoleNotFoundException.class)
     public ResponseEntity<String> handleRoleNotFoundException(RoleNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(ThisUsernameOrEmailAlreadyExists.class)
     public ResponseEntity<String> handleThisUserAlreadyExists(ThisUsernameOrEmailAlreadyExists e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+    @ExceptionHandler(EmailNotFoundException.class)
+    public ResponseEntity<String> handleEmailNotFoundException(EmailNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+    @ExceptionHandler(EmailIsNotVerified.class)
+    public ResponseEntity<String> handleEmailIsNotVerified(EmailIsNotVerified e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 

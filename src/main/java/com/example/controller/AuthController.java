@@ -47,11 +47,16 @@ public class AuthController {
         }
     }
 
-    // sending link after user enter the button-form
-    @PostMapping("/sendLinkToResetPassword")
+    @PostMapping("/sendVerificationCodeOnEmail")
+    public ResponseEntity<String> sendVerificationCodeOnEmail(@RequestBody EmailRequest emailRequest) {
+        authService.sendVerificationCode(emailRequest.getEmail());
+        return ResponseEntity.ok().body("Email sent successfully");
+    }
+
+    @GetMapping("/sendLinkToResetPassword")
     public ResponseEntity<String> sendLinkToRecoverPassword(@RequestBody EmailRequest request) {
-        passwordResetService.sendLinkToResetPassword(request.getEmail()); // ok.
-        return ResponseEntity.ok().body("Reset link sent successfully");
+        passwordResetService.sendLinkToResetPassword(request.getEmail());
+        return ResponseEntity.ok().body("Reset password sent successfully");
     }
 
     // URL logic
@@ -61,11 +66,11 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    // THAT'S FORM
     @PostMapping("/resetPassword")
     public ResponseEntity<String> passwordReset(@RequestBody ResetPasswordCommand resetPasswordCommand) {
         passwordResetService.resetPassword(resetPasswordCommand);
         return ResponseEntity.ok().build();
     }
+    // THAT'S FORM
 
 }

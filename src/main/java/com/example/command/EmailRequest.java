@@ -9,4 +9,6 @@ public class EmailRequest {
     public EmailRequest(String email) {
         this.email = email;
     }
+    public EmailRequest() {
+    }
 }

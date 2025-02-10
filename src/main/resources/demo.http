@@ -56,3 +56,11 @@ GET localhost:8080/users/helloUser
 Content-Type: application/json
 Authorization: Bearer {{jwtToken}}
 
+### Forgot Password
+POST http://localhost:8080/auth/sendLinkToResetPassword
+Content-Type: application/json
+
+{
+  "email": "ghertalilian2006@gmail.com"
+}
+

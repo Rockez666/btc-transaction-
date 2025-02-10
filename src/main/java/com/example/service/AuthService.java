@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.command.AuthorizationUserCommand;
+import com.example.command.EmailRequest;
 import com.example.command.RegisterNewUserCommand;
 import com.example.command.ResetPasswordCommand;
 import com.example.entity.User;
@@ -54,15 +55,18 @@ public class AuthService {
     }
 
     public String login(AuthorizationUserCommand authorizationUserCommand) {
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
+        if (!userDetails.isEnabled()) {
+            throw new EmailIsNotVerified("Email is not verified");
+        }
         UsernamePasswordAuthenticationToken authInPutToken = new UsernamePasswordAuthenticationToken
                 (authorizationUserCommand.getUsername(), authorizationUserCommand.getPassword());
+
         try {
             authenticationManager.authenticate(authInPutToken);
-
         } catch (BadCredentialsException e) {
             throw new InvalidPasswordException("Invalid credentials");
         }
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
         Role role = userDetails.getAuthorities()
                 .stream()
                 .findFirst()
@@ -71,6 +75,14 @@ public class AuthService {
                 .orElseThrow(() -> new RoleNotFoundException("Role not found exception"));
 
         return jwtTokenUtil.generateLoginToken(authorizationUserCommand.getUsername(), role);
+    }
+
+    public void sendVerificationCode(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new EmailNotFoundException("Email not found"));
+        user.setVerificationCode(null);
+        String verificationCode = emailService.generateCode();
+        user.setVerificationCode(verificationCode);
+        emailService.sendVerificationEmail(email, verificationCode);
     }
 
     private void checkIfUsernameOrEmailExists(String username, String email) {

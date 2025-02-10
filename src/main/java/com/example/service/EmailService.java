@@ -59,8 +59,7 @@ public class EmailService {
     }
 
     public void sendLinkToResetPassword(String email, String verificationCode) {
-        // TODO: need to change the link
-        String linkToResetPassword = "http://localhost:5173/register?email=" +
+        String linkToResetPassword = "http://localhost:5173/login?email=" +
                 URLEncoder.encode(email, StandardCharsets.UTF_8) +
                 "&code=" + URLEncoder.encode(verificationCode, StandardCharsets.UTF_8);
 
