@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.command.UpdateTransactionCommand;
+import com.example.command.UpdateUserPasswordCommand;
 import com.example.dto.UserDto;
 import com.example.service.AdminService;
 import com.example.service.UserService;
@@ -22,7 +23,7 @@ public class AdminController {
         return ResponseEntity.ok("hello admin");
     }
 
-    @GetMapping
+    @GetMapping("/getAllUsers")
     public ResponseEntity<List<UserDto>> getAllUser() {
         return ResponseEntity.ok().body(adminService.getAllUsers());
     }
@@ -38,4 +39,5 @@ public class AdminController {
         adminService.updateTransaction(command);
         return ResponseEntity.ok().body("Transaction successfully updated");
     }
+
 }

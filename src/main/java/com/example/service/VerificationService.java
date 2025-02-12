@@ -36,9 +36,11 @@ public class VerificationService {
 
         if (userToReset.getVerificationCode() == null || !userToReset.getVerificationCode().equals(code)) {
             throw new VerificationCodeException("The verification code is incorrect");
-        } else {
+        } else if (!userToReset.isVerified()){
+            userToReset.setVerified(true);
             userToReset.setVerificationCode(null);
             userRepository.save(userToReset);
+
         }
         }
     }

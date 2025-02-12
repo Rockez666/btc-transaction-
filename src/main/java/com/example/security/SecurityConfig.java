@@ -29,14 +29,15 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
+                // admin controller
+                .requestMatchers("/adminPanel/**").hasAuthority("ADMIN")
+
                 // AUTH controller
                 .requestMatchers("/auth/sendLinkToResetPassword").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/auth/verifyEmail").permitAll()
                 // user controller
                 .requestMatchers("/users/**").hasAuthority("USER")
-                // admin controller
-                .requestMatchers("/adminPanel/**").hasAuthority("ADMIN")
                 // transaction controller for USERS
                 .requestMatchers("/transactions/**").hasAuthority("USER")
                 .and()

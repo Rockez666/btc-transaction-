@@ -39,17 +39,17 @@ public class AdminService {
         userRepository.deleteById(userId);
     }
 
-    @Transactional
-    public void updateUser(@RequestBody String userId, @RequestBody UserUpdateCommand command) {
-        User userToUpdate = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
-        if (command.getUsername() != null) {
-            userToUpdate.setUsername(command.getUsername());
-        }
-        if (command.getPassword() != null) {
-            userToUpdate.setPassword(command.getPassword());
-        }
-        userRepository.save(userToUpdate);
-    }
+//    @Transactional
+//    public void updateUser(@RequestBody String userId, @RequestBody UserUpdateCommand command) {
+//        User userToUpdate = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+//        if (command.getUsername() != null) {
+//            userToUpdate.setUsername(command.getUsername());
+//        }
+//        if (command.getPassword() != null) {
+//            userToUpdate.setPassword(command.getPassword());
+//        }
+//        userRepository.save(userToUpdate);
+//    }
 
     @Transactional
     public void updateTransaction(UpdateTransactionCommand command) {

@@ -3,8 +3,8 @@ POST http://localhost:8080/auth/registration
 Content-Type: application/json
 
 {
-  "username": "ROCKEZ666",
-  "email": "ghertalilian2006@gmail.com",
+  "username": "asdasda",
+  "email": "sdds@gmail.com",
   "password": "Lilian4ik123123"
 }
 

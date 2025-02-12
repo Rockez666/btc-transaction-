@@ -53,7 +53,7 @@ public class AuthController {
         return ResponseEntity.ok().body("Email sent successfully");
     }
 
-    @GetMapping("/sendLinkToResetPassword")
+    @PostMapping("/sendLinkToResetPassword")
     public ResponseEntity<String> sendLinkToRecoverPassword(@RequestBody EmailRequest request) {
         passwordResetService.sendLinkToResetPassword(request.getEmail());
         return ResponseEntity.ok().body("Reset password sent successfully");
