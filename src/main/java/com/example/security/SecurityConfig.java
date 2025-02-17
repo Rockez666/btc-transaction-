@@ -39,7 +39,7 @@ public class SecurityConfig {
                 // user controller
                 .requestMatchers("/users/**").hasAuthority("USER")
                 // transaction controller for USERS
-                .requestMatchers("/transactions/**").hasAuthority("USER")
+                .requestMatchers("/transactions/**").hasAnyAuthority("USER", "ADMIN")
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

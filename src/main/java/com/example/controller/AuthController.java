@@ -40,7 +40,7 @@ public class AuthController {
     @GetMapping("/verifyEmailAndCode")
     public ResponseEntity<String> verifyEmail(@RequestParam("email") String email, @RequestParam("code") String code) {
         try {
-            verificationService.verifyEmail(email,code);
+            verificationService.verifyEmail(email, code);
             return ResponseEntity.ok().body("Email verified successfully");
         } catch (UserNotFoundException | ThatUserIsVerifiedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -59,10 +59,9 @@ public class AuthController {
         return ResponseEntity.ok().body("Reset password sent successfully");
     }
 
-    // URL logic
     @GetMapping("/verifyPasswordAndCode")
     public ResponseEntity<String> verifyResetPasswordCode(@RequestParam("email") String email, @RequestParam("code") String code) {
-   verificationService.verifyResetPassword(email,code);
+        verificationService.verifyResetPassword(email, code);
         return ResponseEntity.ok().build();
     }
 
@@ -71,6 +70,5 @@ public class AuthController {
         passwordResetService.resetPassword(resetPasswordCommand);
         return ResponseEntity.ok().build();
     }
-    // THAT'S FORM
 
 }

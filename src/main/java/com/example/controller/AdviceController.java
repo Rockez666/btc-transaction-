@@ -73,8 +73,9 @@ public class AdviceController {
     public ResponseEntity<String> handleEmailNotFoundException(EmailNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
-    @ExceptionHandler(EmailIsNotVerified.class)
-    public ResponseEntity<String> handleEmailIsNotVerified(EmailIsNotVerified e) {
+
+    @ExceptionHandler(AdminDeleteException.class)
+    public ResponseEntity<String> handleAdminDeleteException(AdminDeleteException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 

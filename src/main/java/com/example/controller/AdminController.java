@@ -28,16 +28,9 @@ public class AdminController {
         return ResponseEntity.ok().body(adminService.getAllUsers());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUserByID(@PathVariable Long id) {
-        adminService.deleteUser(id);
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteUserByID(@PathVariable String userId) {
+        adminService.deleteUser(userId);
         return ResponseEntity.ok().body("User successfully deleted");
     }
-
-    @PostMapping("/updateTransaction")
-    public ResponseEntity<String> updateTransaction(@RequestBody UpdateTransactionCommand command) {
-        adminService.updateTransaction(command);
-        return ResponseEntity.ok().body("Transaction successfully updated");
-    }
-
 }

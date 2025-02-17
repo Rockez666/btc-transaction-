@@ -18,7 +18,9 @@ public class UserMapper {
             return null;
         }
         return new UserDto(
+                user.getUserId(),
                 user.getUsername(),
+                user.getRole(),
                 user.getTransactions()
                         .stream()
                         .map(transactionMapper::transactionToDto)

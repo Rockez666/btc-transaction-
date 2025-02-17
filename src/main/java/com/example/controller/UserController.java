@@ -1,6 +1,5 @@
 package com.example.controller;
 
-import com.example.command.DeleteTransactionCommand;
 import com.example.dto.UserDto;
 import com.example.service.TransactionService;
 import com.example.service.UserService;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final TransactionService transactionService;
 
     @GetMapping("/currentUserDto")
     public ResponseEntity<UserDto> getCurrentUser() {

@@ -57,8 +57,6 @@ public class JWTFilter extends OncePerRequestFilter {
             }
         }
 
-        // Если токен отсутствует или не действителен, но запрос не `/auth/sendLinkToResetPassword`,
-        // то можно либо пропустить запрос без аутентификации, либо отправить ошибку
         filterChain.doFilter(request, response);
     }
 }

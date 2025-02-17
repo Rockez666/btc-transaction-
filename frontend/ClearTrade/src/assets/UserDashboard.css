@@ -1,0 +1,353 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f4f8;
+  color: #333333;
+}
+
+.dashboard-container {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  max-width: 1200px;
+  margin: 30px auto;
+  color: #333333;
+  box-sizing: border-box;
+}
+
+.greeting {
+  background-color: #e1f5fe;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 800;
+  color: #0277bd;
+  margin-bottom: 30px;
+}
+
+.dashboard-title {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 800;
+  color: #0288d1;
+  margin-bottom: 20px;
+}
+
+.error {
+  background-color: #d32f2f;
+  color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.toggle-btn {
+  background-color: #0288d1;
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.toggle-btn:hover {
+  background-color: #01579b;
+}
+
+.transactions-list,
+.tokens-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 20px;
+}
+
+.transaction-item,
+.token-item {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  font-weight: 700;
+}
+
+.transaction-item p,
+.token-item p {
+  margin: 10px 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.transaction-item:hover,
+.token-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-item p strong,
+.token-item p strong {
+  color: #0288d1;
+}
+
+.transaction-item {
+  border-left: 4px solid #0288d1;
+}
+
+.token-item {
+  border-left: 4px solid #039be5;
+}
+
+.user-details {
+  background-color: #e3f2fd;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+.user-details:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.user-details h2 {
+  font-size: 32px;
+  font-weight: 900;
+  color: #0277bd;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.user-details p {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.user-details p strong {
+  color: #0288d1;
+}
+
+.user-details .username {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0277bd;
+  padding-bottom: 5px;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+
+
+.transactions-list,
+.tokens-list {
+  margin-top: 30px;
+}
+
+.transaction-type {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.transaction-details p {
+  margin-top: 5px;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-container,
+.greeting,
+.user-details,
+.transactions-list,
+.tokens-list,
+.transaction-item,
+.token-item {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.create-transaction-form {
+  background-color: #f5f5f5;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin-top: 20px;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.create-transaction-form h3 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0288d1;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.create-transaction-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.create-transaction-form label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 5px;
+}
+
+.create-transaction-form input,
+.create-transaction-form select {
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #555555;
+  border: 2px solid #dddddd;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+}
+
+.create-transaction-form input:focus,
+.create-transaction-form select:focus {
+  border-color: #0288d1;
+  outline: none;
+}
+
+.submit-btn {
+  background-color: #0288d1;
+  color: #ffffff;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submit-btn:hover {
+  background-color: #01579b;
+  transform: scale(1.05);
+}
+
+.submit-btn:active {
+  transform: scale(0.95);
+}
+
+.transaction-create-button {
+  background-color: #0288d1;
+  color: #ffffff;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.transaction-create-button:hover {
+  background-color: #01579b;
+}
+
+.field-error {
+  font-family: 'Poppins', sans-serif;
+
+  background-color: #ffcccb;
+  color: #d32f2f;
+  font-size: 14px;
+  margin-top: 5px;
+  font-weight: bold;
+  padding: 8px;
+  border-radius: 5px;
+  transition: opacity 0.5s ease-out;
+  animation: fadeIn 0.3s ease-in-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.error-response {
+  background-color: #f44336; 
+  color: #ffffff; 
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.responseError p {
+  margin: 0;
+}
+
+.responseError strong {
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.responseError .error-code {
+  font-size: 24px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.responseError .error-message {
+  font-size: 16px;
+  font-weight: 500;
+  margin-top: 5px;
+}
+
+.responseError:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -18,7 +18,7 @@ import java.util.UUID;
 @Setter
 public class User {
     @Id
-    private String id;
+    private String userId;
     private String username;
     private String email;
     private String password;
@@ -37,7 +37,7 @@ public class User {
     }
 
     public User(String username, String email, String password,String verificationCode) {
-        this.id = UUID.randomUUID().toString();
+        this.userId = UUID.randomUUID().toString();
         this.username = username;
         this.email = email;
         this.password = password;
@@ -47,16 +47,20 @@ public class User {
         this.creationDate = LocalDate.now();
     }
 
+    public boolean isAdmin() {
+        return this.role == Role.ADMIN;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id);
+        return Objects.equals(userId, user.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(userId);
     }
 }

@@ -30,11 +30,10 @@ public class AuthService {
     private final CustomUserDetailsService customUserDetailsService;
     private final JWTUtill jwtTokenUtil;
 
-
     @PostConstruct
     @Transactional
     public void init() {
-        User admin = new User("Admin", "emailadmin@gmail.com", passwordEncoder.encode("passwordbroskiadmin"), "555");
+        User admin = new User("Admin", "emailadmin@gmail.com", passwordEncoder.encode("passwordbroskiadmin"), "7777");
         admin.setRole(Role.ADMIN);
         admin.setVerified(true);
         checkIfUsernameOrEmailExists(admin.getUsername(), admin.getEmail());
@@ -56,20 +55,13 @@ public class AuthService {
 
     public String login(AuthorizationUserCommand authorizationUserCommand) {
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(authorizationUserCommand.getUsername());
+        UsernamePasswordAuthenticationToken authInPutToken = new UsernamePasswordAuthenticationToken
+                (authorizationUserCommand.getUsername(), authorizationUserCommand.getPassword());
         try {
-            if (!userDetails.isEnabled()) {
-                throw new EmailIsNotVerified("Email is not verified");
-            }
-        } catch (EmailIsNotVerified e) {
-            throw new EmailIsNotVerified("Email Is Not Verified");
-        }
-
-        try {
-            UsernamePasswordAuthenticationToken authInPutToken = new UsernamePasswordAuthenticationToken
-                    (authorizationUserCommand.getUsername(), authorizationUserCommand.getPassword());
-
             authenticationManager.authenticate(authInPutToken);
-
+        } catch (BadCredentialsException e) {
+            throw new InvalidPasswordException("Invalid credentials");
+        }
             Role role = userDetails.getAuthorities()
                     .stream()
                     .findFirst()
@@ -78,9 +70,7 @@ public class AuthService {
                     .orElseThrow(() -> new RoleNotFoundException("Role not found exception"));
             return jwtTokenUtil.generateLoginToken(authorizationUserCommand.getUsername(), role);
 
-        } catch (BadCredentialsException e) {
-            throw new InvalidPasswordException("Invalid credentials");
-        }
+
     }
 
     public void sendVerificationCode(String email) {
